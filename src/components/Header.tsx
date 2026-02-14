@@ -1,43 +1,51 @@
 interface HeaderProps {
   title: string;
   onBack?: () => void;
+  transparent?: boolean;
 }
 
-export function Header({ title, onBack }: HeaderProps) {
+export function Header({ title, onBack, transparent = false }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
+    <header
+      className={`
+        sticky top-0 z-40
+        ${transparent ? 'bg-transparent' : 'glass border-b border-white/50'}
+      `}
+    >
       <div className="flex items-center h-touch-lg px-4">
         {onBack && (
           <button
             onClick={onBack}
             className="
-              -ml-2 mr-2
-              w-touch h-touch min-h-touch
+              -ml-2 mr-3
+              w-12 h-12 min-h-0
               flex items-center justify-center
-              rounded-xl
-              text-gray-700
-              hover:bg-gray-100
-              focus:outline-none focus-visible:ring-4 focus-visible:ring-primary focus-visible:ring-offset-2
-              transition-colors duration-200
+              rounded-2xl
+              text-gray-600
+              hover:bg-surface-100
+              active:bg-surface-200
+              focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-400/50 focus-visible:ring-offset-2
             "
             aria-label="Go back"
           >
             <svg
-              className="w-8 h-8"
+              className="w-7 h-7"
               fill="none"
               stroke="currentColor"
+              strokeWidth={2.5}
               viewBox="0 0 24 24"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
                 d="M15 19l-7-7 7-7"
               />
             </svg>
           </button>
         )}
-        <h1 className="text-elderly-xl font-bold text-gray-900">{title}</h1>
+        <h1 className="text-elderly-xl font-bold text-gray-900 tracking-tight">
+          {title}
+        </h1>
       </div>
     </header>
   );

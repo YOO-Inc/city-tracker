@@ -1,39 +1,50 @@
 import { ButtonHTMLAttributes } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'default' | 'large';
   fullWidth?: boolean;
 }
 
 export function Button({
   children,
   variant = 'primary',
+  size = 'default',
   fullWidth = true,
   className = '',
   disabled,
   ...props
 }: ButtonProps) {
   const baseStyles = `
-    h-touch-lg min-h-touch-lg
-    px-6 rounded-xl
-    text-elderly-lg font-semibold
-    transition-colors duration-200
+    relative overflow-hidden
+    px-8 rounded-2xl
+    font-semibold tracking-wide
+    transform active:scale-[0.98]
     focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2
-    disabled:opacity-50 disabled:cursor-not-allowed
+    disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100
   `;
+
+  const sizeStyles = {
+    default: 'h-touch min-h-touch text-elderly-base',
+    large: 'h-touch-lg min-h-touch-lg text-elderly-lg',
+  };
 
   const variantStyles = {
     primary: `
-      bg-primary text-white
-      hover:bg-primary-dark
-      focus-visible:ring-primary
-      active:bg-primary-dark
+      bg-gradient-primary text-white
+      shadow-soft hover:shadow-glow
+      focus-visible:ring-primary-400/50
     `,
     secondary: `
-      bg-gray-100 text-gray-900
-      hover:bg-gray-200
-      focus-visible:ring-gray-400
-      active:bg-gray-200
+      bg-white text-gray-700
+      border-2 border-surface-200
+      shadow-soft hover:border-primary-300 hover:text-primary-600
+      focus-visible:ring-primary-400/50
+    `,
+    ghost: `
+      bg-transparent text-gray-600
+      hover:bg-surface-100
+      focus-visible:ring-gray-400/50
     `,
   };
 
@@ -41,6 +52,7 @@ export function Button({
     <button
       className={`
         ${baseStyles}
+        ${sizeStyles[size]}
         ${variantStyles[variant]}
         ${fullWidth ? 'w-full' : ''}
         ${className}

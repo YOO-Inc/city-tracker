@@ -1,25 +1,39 @@
 {
   "home": {
     "title": "City Tracker",
-    "addNewEntry": "Add new entry"
+    "addLocation": "Add Location",
+    "viewEntries": "View Saved Locations",
+    "reassurance": "Your data is saved automatically",
+    "emptyHint": "No locations logged yet. Start by adding one!"
   },
   "add": {
-    "title": "Add Entry",
-    "gettingLocation": "Getting your location...",
+    "title": "Add Location",
+    "gettingLocation": "Finding your location...",
     "locationFound": "Location found",
     "locationError": "Could not get location",
+    "locationErrorSoft": "Waiting for GPS signal",
+    "retryLocation": "Try again",
     "type": "Type",
     "selectType": "Select type",
     "photos": "Photos",
     "addPhoto": "Add Photo",
+    "takePhoto": "Take Photo",
     "photosHint": "Up to 3 photos",
-    "description": "Description",
-    "descriptionPlaceholder": "Optional notes...",
+    "description": "Notes (optional)",
+    "descriptionPlaceholder": "Add any details...",
     "save": "Save",
+    "saveEntry": "Save Location",
     "saving": "Saving..."
   },
+  "entries": {
+    "title": "Saved Locations",
+    "empty": "No locations yet",
+    "emptyHint": "Tap + to add your first location",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
   "snackbar": {
-    "saved": "Saved successfully!",
+    "saved": "Location saved!",
     "error": "Something went wrong. Try again."
   },
   "types": {

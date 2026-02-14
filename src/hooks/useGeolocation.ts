@@ -1,23 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { LocationData } from '@/types';
 
 interface UseGeolocationResult {
   location: LocationData | null;
   loading: boolean;
   error: string | null;
+  retry: () => void;
 }
 
 export function useGeolocation(): UseGeolocationResult {
   const [location, setLocation] = useState<LocationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
-  useEffect(() => {
+  const fetchLocation = useCallback(async () => {
     if (!navigator.geolocation) {
       setError('Geolocation is not supported by your browser');
       setLoading(false);
       return;
     }
+
+    setLoading(true);
+    setError(null);
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -43,11 +48,19 @@ export function useGeolocation(): UseGeolocationResult {
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 15000,
         maximumAge: 0,
       }
     );
   }, []);
 
-  return { location, loading, error };
+  useEffect(() => {
+    fetchLocation();
+  }, [fetchLocation, attempt]);
+
+  const retry = useCallback(() => {
+    setAttempt((prev) => prev + 1);
+  }, []);
+
+  return { location, loading, error, retry };
 }

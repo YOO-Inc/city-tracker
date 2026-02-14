@@ -21,7 +21,7 @@ export interface LocationData {
   address: string | null;
 }
 
-export type Screen = 'home' | 'add';
+export type Screen = 'home' | 'add' | 'entries';
 
 export interface SnackbarState {
   visible: boolean;

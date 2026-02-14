@@ -8,75 +8,90 @@ interface SnackbarProps {
 export function Snackbar({ snackbar, onClose }: SnackbarProps) {
   if (!snackbar.visible) return null;
 
-  const bgColor = snackbar.type === 'success' ? 'bg-success' : 'bg-error';
+  const isSuccess = snackbar.type === 'success';
 
   return (
-    <div className="fixed bottom-6 left-4 right-4 z-50">
+    <div className="fixed bottom-6 left-4 right-4 z-50 safe-bottom animate-slide-up">
       <div
         className={`
-          ${bgColor}
-          text-white
-          px-6 py-4
-          rounded-xl
-          shadow-lg
-          flex items-center justify-between
-          text-elderly-base font-medium
-          animate-slide-up
+          px-5 py-4
+          rounded-2xl
+          shadow-soft-lg
+          flex items-center gap-4
+          ${isSuccess
+            ? 'bg-gradient-success text-white'
+            : 'bg-white border-2 border-error-200 text-error-600'
+          }
         `}
       >
-        <div className="flex items-center gap-3">
-          {snackbar.type === 'success' ? (
+        <div
+          className={`
+            w-10 h-10 min-h-0
+            rounded-xl
+            flex items-center justify-center
+            flex-shrink-0
+            ${isSuccess ? 'bg-white/20' : 'bg-error-100'}
+          `}
+        >
+          {isSuccess ? (
             <svg
-              className="w-6 h-6 flex-shrink-0"
+              className="w-6 h-6"
               fill="none"
               stroke="currentColor"
+              strokeWidth={2.5}
               viewBox="0 0 24 24"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
+                d="M4.5 12.75l6 6 9-13.5"
               />
             </svg>
           ) : (
             <svg
-              className="w-6 h-6 flex-shrink-0"
+              className="w-6 h-6"
               fill="none"
               stroke="currentColor"
+              strokeWidth={2}
               viewBox="0 0 24 24"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
               />
             </svg>
           )}
-          <span>{snackbar.message}</span>
         </div>
+
+        <span className="flex-1 text-elderly-base font-medium">
+          {snackbar.message}
+        </span>
+
         <button
           onClick={onClose}
-          className="
-            p-2 -mr-2
-            rounded-lg
-            hover:bg-white/20
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-white
-            min-h-0
-          "
+          className={`
+            w-10 h-10 min-h-0
+            rounded-xl
+            flex items-center justify-center
+            ${isSuccess
+              ? 'hover:bg-white/20 text-white/80 hover:text-white'
+              : 'hover:bg-error-100 text-error-400 hover:text-error-600'
+            }
+            focus:outline-none
+          `}
           aria-label="Close"
         >
           <svg
             className="w-5 h-5"
             fill="none"
             stroke="currentColor"
+            strokeWidth={2}
             viewBox="0 0 24 24"
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
