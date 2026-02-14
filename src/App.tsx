@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { HomeScreen } from '@/screens/HomeScreen';
 import { AddEntryScreen } from '@/screens/AddEntryScreen';
 import { EntriesListScreen } from '@/screens/EntriesListScreen';
+import { SettingsScreen } from '@/screens/SettingsScreen';
 import { Snackbar } from '@/components/Snackbar';
 import { useSnackbar } from '@/hooks/useSnackbar';
 import { supabase } from '@/lib/supabase';
@@ -32,6 +33,10 @@ export default function App() {
     setCurrentScreen('entries');
   };
 
+  const handleOpenSettings = () => {
+    setCurrentScreen('settings');
+  };
+
   const handleBack = () => {
     setCurrentScreen('home');
   };
@@ -52,6 +57,7 @@ export default function App() {
         <HomeScreen
           onAddEntry={handleAddEntry}
           onViewEntries={handleViewEntries}
+          onOpenSettings={handleOpenSettings}
           entryCount={entryCount}
         />
       )}
@@ -69,6 +75,10 @@ export default function App() {
           onBack={handleBack}
           onAddEntry={handleAddEntry}
         />
+      )}
+
+      {currentScreen === 'settings' && (
+        <SettingsScreen onBack={handleBack} />
       )}
 
       <Snackbar snackbar={snackbar} onClose={hide} />

@@ -40,5 +40,16 @@
   "types": {
     "electricity": "Electricity Board",
     "billboard": "Billboard"
+  },
+  "settings": {
+    "title": "Settings",
+    "entryTypes": "Location Types",
+    "newTypePlaceholder": "New type name...",
+    "addType": "Add",
+    "noTypes": "No types configured",
+    "resetDefaults": "Reset to Defaults",
+    "deleteConfirmTitle": "Delete this type?",
+    "cancel": "No, Keep It",
+    "deleteType": "Yes, Delete"
   }
 }
