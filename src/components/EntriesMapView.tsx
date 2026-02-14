@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import type { Entry } from '@/types';
-import { t } from '@/lib/i18n';
+import { t, translateTypeName, isRTL } from '@/lib/i18n';
 import { getTypeColor } from '@/lib/storage';
 
 // Create a colored SVG marker icon
@@ -75,6 +75,7 @@ function FitBounds({ entries }: { entries: Entry[] }) {
 
 function RecenterButton({ entries }: { entries: Entry[] }) {
   const map = useMap();
+  const rtl = isRTL();
 
   const handleRecenter = () => {
     fitMapToEntries(map, entries);
@@ -83,15 +84,16 @@ function RecenterButton({ entries }: { entries: Entry[] }) {
   return (
     <button
       onClick={handleRecenter}
-      className="
-        absolute top-3 right-3 z-[1000]
+      className={`
+        absolute top-3 z-[1000]
         w-11 h-11 min-h-0
         bg-white rounded-xl
         shadow-md border border-surface-200
         flex items-center justify-center
         hover:bg-surface-50 active:scale-95
         transition-transform
-      "
+        ${rtl ? 'left-3' : 'right-3'}
+      `}
       aria-label="Recenter map"
       title="Recenter map"
     >
@@ -192,7 +194,7 @@ export function EntriesMapView({
                       className="inline-block px-2 py-0.5 rounded-md text-xs font-semibold text-white"
                       style={{ backgroundColor: color }}
                     >
-                      {entry.type}
+                      {translateTypeName(entry.type)}
                     </span>
                     <p className="text-sm text-gray-700 font-medium mt-1 truncate">
                       {truncateAddress(entry.address)}

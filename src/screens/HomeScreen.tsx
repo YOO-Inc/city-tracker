@@ -1,4 +1,4 @@
-import { t } from '@/lib/i18n';
+import { t, isRTL, translateTypeName } from '@/lib/i18n';
 import { getTypeColor } from '@/lib/storage';
 import type { TypeCount } from '@/App';
 
@@ -12,6 +12,16 @@ interface HomeScreenProps {
 
 export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCounts = [], loading = false }: HomeScreenProps) {
   const totalCount = typeCounts.reduce((sum, tc) => sum + tc.count, 0);
+  const rtl = isRTL();
+
+  const getLocationText = () => {
+    if (totalCount === 0) return '';
+    const locationWord = totalCount === 1
+      ? t('home.location')
+      : t('home.locations');
+    return `${totalCount} ${locationWord} ${t('home.saved')}`;
+  };
+
   return (
     <div className="min-h-screen min-h-[100dvh] flex flex-col bg-gradient-to-b from-white via-surface-50 to-surface-100">
       {/* Header */}
@@ -20,13 +30,13 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
           {t('home.title')}
         </h1>
         <p className="mt-1 text-elderly-base text-gray-500">
-          Log locations as you walk
+          {t('home.subtitle')}
         </p>
         {/* Settings gear icon */}
         <button
           onClick={onOpenSettings}
           className="
-            absolute top-8 right-4
+            absolute top-8 end-4
             w-12 h-12 min-h-0
             flex items-center justify-center
             rounded-2xl
@@ -71,7 +81,7 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
             active:scale-[0.98]
             focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-400 focus-visible:ring-offset-4
             flex items-center gap-5
-            text-left
+            text-start
           "
         >
           <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
@@ -94,7 +104,7 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
               {t('home.addLocation')}
             </span>
             <span className="text-primary-100 text-elderly-sm mt-1 block">
-              Photo, type & GPS
+              {t('add.photos')}, {t('add.type').toLowerCase()} & GPS
             </span>
           </div>
         </button>
@@ -112,7 +122,7 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
               active:scale-[0.98]
               focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-400/50 focus-visible:ring-offset-2
               flex items-center gap-4
-              text-left
+              text-start
             "
           >
             <div className="w-14 h-14 rounded-2xl bg-surface-100 flex items-center justify-center flex-shrink-0">
@@ -141,7 +151,7 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
               </span>
               {totalCount > 0 && (
                 <span className="text-gray-500 text-elderly-sm mt-0.5 block">
-                  {totalCount} {totalCount === 1 ? 'location' : 'locations'} saved
+                  {getLocationText()}
                 </span>
               )}
             </div>
@@ -151,6 +161,7 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
               stroke="currentColor"
               strokeWidth={2}
               viewBox="0 0 24 24"
+              style={{ transform: rtl ? 'scaleX(-1)' : undefined }}
             >
               <path
                 strokeLinecap="round"
@@ -168,7 +179,7 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
           </div>
         ) : typeCounts.length > 0 ? (
           <div className="mt-5 p-5 rounded-3xl bg-white border-2 border-surface-200 shadow-soft">
-            <h3 className="text-elderly-base font-semibold text-gray-700 mb-4">Summary</h3>
+            <h3 className="text-elderly-base font-semibold text-gray-700 mb-4">{t('home.summary')}</h3>
             <div className="space-y-3">
               {typeCounts.map((tc) => (
                 <div
@@ -180,7 +191,7 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
                     style={{ backgroundColor: getTypeColor(tc.type) }}
                   />
                   <span className="flex-1 text-elderly-base font-medium text-gray-900">
-                    {tc.type}
+                    {translateTypeName(tc.type)}
                   </span>
                   <span className="text-elderly-lg font-bold text-gray-700">
                     {tc.count}

@@ -23,6 +23,11 @@ body {
   min-height: 100dvh;
 }
 
+/* RTL-specific body font for Hebrew */
+html[lang="he"] body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Heebo', 'Rubik', sans-serif;
+}
+
 /* Smooth transitions globally */
 *, *::before, *::after {
   transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
@@ -107,4 +112,165 @@ textarea {
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
+}
+
+/* RTL Support Utilities */
+@layer utilities {
+  /* Logical margin utilities */
+  .ms-auto {
+    margin-inline-start: auto;
+  }
+  .me-auto {
+    margin-inline-end: auto;
+  }
+  .ms-0 {
+    margin-inline-start: 0;
+  }
+  .me-0 {
+    margin-inline-end: 0;
+  }
+  .ms-1 {
+    margin-inline-start: 0.25rem;
+  }
+  .me-1 {
+    margin-inline-end: 0.25rem;
+  }
+  .ms-2 {
+    margin-inline-start: 0.5rem;
+  }
+  .me-2 {
+    margin-inline-end: 0.5rem;
+  }
+  .ms-3 {
+    margin-inline-start: 0.75rem;
+  }
+  .me-3 {
+    margin-inline-end: 0.75rem;
+  }
+  .ms-4 {
+    margin-inline-start: 1rem;
+  }
+  .me-4 {
+    margin-inline-end: 1rem;
+  }
+  .ms-5 {
+    margin-inline-start: 1.25rem;
+  }
+  .me-5 {
+    margin-inline-end: 1.25rem;
+  }
+  .-ms-2 {
+    margin-inline-start: -0.5rem;
+  }
+  .-me-2 {
+    margin-inline-end: -0.5rem;
+  }
+
+  /* Logical padding utilities */
+  .ps-0 {
+    padding-inline-start: 0;
+  }
+  .pe-0 {
+    padding-inline-end: 0;
+  }
+  .ps-4 {
+    padding-inline-start: 1rem;
+  }
+  .pe-4 {
+    padding-inline-end: 1rem;
+  }
+  .ps-5 {
+    padding-inline-start: 1.25rem;
+  }
+  .pe-5 {
+    padding-inline-end: 1.25rem;
+  }
+  .ps-12 {
+    padding-inline-start: 3rem;
+  }
+  .pe-12 {
+    padding-inline-end: 3rem;
+  }
+  .ps-14 {
+    padding-inline-start: 3.5rem;
+  }
+  .pe-14 {
+    padding-inline-end: 3.5rem;
+  }
+
+  /* Logical position utilities */
+  .start-0 {
+    inset-inline-start: 0;
+  }
+  .end-0 {
+    inset-inline-end: 0;
+  }
+  .start-4 {
+    inset-inline-start: 1rem;
+  }
+  .end-4 {
+    inset-inline-end: 1rem;
+  }
+  .start-5 {
+    inset-inline-start: 1.25rem;
+  }
+  .end-5 {
+    inset-inline-end: 1.25rem;
+  }
+  .start-6 {
+    inset-inline-start: 1.5rem;
+  }
+  .end-6 {
+    inset-inline-end: 1.5rem;
+  }
+  .-start-2 {
+    inset-inline-start: -0.5rem;
+  }
+  .-end-2 {
+    inset-inline-end: -0.5rem;
+  }
+
+  /* Text alignment */
+  .text-start {
+    text-align: start;
+  }
+  .text-end {
+    text-align: end;
+  }
+
+  /* Border radius */
+  .rounded-s-2xl {
+    border-start-start-radius: 1rem;
+    border-end-start-radius: 1rem;
+  }
+  .rounded-e-2xl {
+    border-start-end-radius: 1rem;
+    border-end-end-radius: 1rem;
+  }
+
+  /* Flex direction for RTL */
+  .flex-row-reverse-rtl {
+    flex-direction: row;
+  }
+  [dir="rtl"] .flex-row-reverse-rtl {
+    flex-direction: row-reverse;
+  }
+
+  /* Transform for RTL icons */
+  .rtl-flip {
+    transform: scaleX(1);
+  }
+  [dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+  }
+
+  /* Space utilities for RTL */
+  .space-x-start-3 > :not([hidden]) ~ :not([hidden]) {
+    margin-inline-start: 0.75rem;
+  }
+}
+
+/* RTL-aware chevron direction */
+[dir="rtl"] .chevron-end {
+  transform: scaleX(-1);
 }

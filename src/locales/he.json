@@ -1,0 +1,66 @@
+{
+  "home": {
+    "title": "מעקב עירוני",
+    "addLocation": "הוסף מיקום",
+    "viewEntries": "צפה במיקומים שנשמרו",
+    "reassurance": "הנתונים שלך נשמרים אוטומטית",
+    "emptyHint": "עדיין לא נרשמו מיקומים. התחל בהוספת אחד!",
+    "subtitle": "רשום מיקומים בזמן הליכה",
+    "summary": "סיכום",
+    "location": "מיקום",
+    "locations": "מיקומים",
+    "saved": "נשמרו"
+  },
+  "add": {
+    "title": "הוסף מיקום",
+    "gettingLocation": "מחפש את המיקום שלך...",
+    "locationFound": "המיקום נמצא",
+    "locationError": "לא ניתן לקבל מיקום",
+    "locationErrorSoft": "ממתין לאות GPS",
+    "retryLocation": "נסה שוב",
+    "refreshLocation": "רענן מיקום",
+    "type": "סוג",
+    "selectType": "בחר סוג",
+    "photos": "תמונות",
+    "addPhoto": "הוסף תמונה",
+    "takePhoto": "צלם תמונה",
+    "photosHint": "עד 3 תמונות",
+    "description": "הערות (אופציונלי)",
+    "descriptionPlaceholder": "הוסף פרטים...",
+    "save": "שמור",
+    "saveEntry": "שמור מיקום",
+    "saving": "שומר..."
+  },
+  "entries": {
+    "title": "מיקומים שנשמרו",
+    "empty": "אין מיקומים עדיין",
+    "emptyHint": "לחץ על + כדי להוסיף את המיקום הראשון",
+    "today": "היום",
+    "yesterday": "אתמול",
+    "listView": "רשימה",
+    "mapView": "מפה",
+    "unknownLocation": "מיקום לא ידוע"
+  },
+  "snackbar": {
+    "saved": "המיקום נשמר!",
+    "error": "משהו השתבש. נסה שוב."
+  },
+  "types": {
+    "electricity": "לוח חשמל",
+    "billboard": "שלט פרסום"
+  },
+  "settings": {
+    "title": "הגדרות",
+    "entryTypes": "סוגי מיקומים",
+    "newTypePlaceholder": "שם סוג חדש...",
+    "addType": "הוסף",
+    "noTypes": "לא הוגדרו סוגים",
+    "resetDefaults": "אפס לברירת מחדל",
+    "deleteConfirmTitle": "למחוק את הסוג הזה?",
+    "cancel": "לא, השאר",
+    "deleteType": "כן, מחק",
+    "language": "שפה",
+    "english": "English",
+    "hebrew": "עברית"
+  }
+}

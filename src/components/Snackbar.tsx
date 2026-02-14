@@ -11,7 +11,7 @@ export function Snackbar({ snackbar, onClose }: SnackbarProps) {
   const isSuccess = snackbar.type === 'success';
 
   return (
-    <div className="fixed bottom-6 left-4 right-4 z-50 safe-bottom animate-slide-up">
+    <div className="fixed bottom-6 start-4 end-4 z-50 safe-bottom animate-slide-up">
       <div
         className={`
           px-5 py-4

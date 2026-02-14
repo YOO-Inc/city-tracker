@@ -6,7 +6,7 @@ import { SettingsScreen } from '@/screens/SettingsScreen';
 import { Snackbar } from '@/components/Snackbar';
 import { useSnackbar } from '@/hooks/useSnackbar';
 import { supabase } from '@/lib/supabase';
-import { t } from '@/lib/i18n';
+import { t, initLanguage, subscribeToLanguageChange } from '@/lib/i18n';
 import type { Screen } from '@/types';
 
 export interface TypeCount {
@@ -18,7 +18,20 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [typeCounts, setTypeCounts] = useState<TypeCount[]>([]);
   const [loading, setLoading] = useState(true);
+  const [, setLanguageKey] = useState(0); // Force re-render on language change
   const { snackbar, showSuccess, showError, hide } = useSnackbar();
+
+  // Initialize language on mount
+  useEffect(() => {
+    initLanguage();
+
+    // Subscribe to language changes to trigger re-render
+    const unsubscribe = subscribeToLanguageChange(() => {
+      setLanguageKey((k) => k + 1);
+    });
+
+    return unsubscribe;
+  }, []);
 
   const fetchTypeCounts = async () => {
     const { data } = await supabase

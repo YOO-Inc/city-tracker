@@ -4,7 +4,12 @@
     "addLocation": "Add Location",
     "viewEntries": "View Saved Locations",
     "reassurance": "Your data is saved automatically",
-    "emptyHint": "No locations logged yet. Start by adding one!"
+    "emptyHint": "No locations logged yet. Start by adding one!",
+    "subtitle": "Log locations as you walk",
+    "summary": "Summary",
+    "location": "location",
+    "locations": "locations",
+    "saved": "saved"
   },
   "add": {
     "title": "Add Location",
@@ -33,7 +38,8 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "listView": "List",
-    "mapView": "Map"
+    "mapView": "Map",
+    "unknownLocation": "Unknown location"
   },
   "snackbar": {
     "saved": "Location saved!",
@@ -52,6 +58,9 @@
     "resetDefaults": "Reset to Defaults",
     "deleteConfirmTitle": "Delete this type?",
     "cancel": "No, Keep It",
-    "deleteType": "Yes, Delete"
+    "deleteType": "Yes, Delete",
+    "language": "Language",
+    "english": "English",
+    "hebrew": "עברית"
   }
 }

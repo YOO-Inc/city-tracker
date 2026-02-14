@@ -5,7 +5,7 @@ import { Input } from '@/components/Input';
 import { LoadingOverlay } from '@/components/LoadingOverlay';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { usePhotoUpload } from '@/hooks/usePhotoUpload';
-import { t } from '@/lib/i18n';
+import { t, translateTypeName } from '@/lib/i18n';
 import { getLastEntryType, setLastEntryType, getEntryTypes, getTypeColor } from '@/lib/storage';
 import { createEntry } from '@/lib/supabase';
 
@@ -176,7 +176,7 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
           </label>
           <div className="relative">
             <span
-              className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full z-10"
+              className="absolute start-5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full z-10"
               style={{ backgroundColor: getTypeColor(selectedType) }}
             />
             <select
@@ -184,7 +184,7 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
               onChange={(e) => setSelectedType(e.target.value)}
               className="
                 w-full h-touch min-h-touch
-                pl-14 pr-12 rounded-2xl
+                ps-14 pe-12 rounded-2xl
                 text-elderly-base font-medium text-gray-900
                 bg-white border-2 border-surface-200
                 shadow-soft
@@ -196,11 +196,11 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
             >
               {entryTypes.map((type) => (
                 <option key={type.name} value={type.name}>
-                  {type.name}
+                  {translateTypeName(type.name)}
                 </option>
               ))}
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <div className="absolute end-4 top-1/2 -translate-y-1/2 pointer-events-none">
               <svg
                 className="w-6 h-6 text-gray-400"
                 fill="none"
@@ -240,7 +240,7 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
                     type="button"
                     onClick={() => removePhoto(photo.id)}
                     className="
-                      absolute -top-2 -right-2
+                      absolute -top-2 -end-2
                       w-7 h-7 min-h-0
                       rounded-full
                       bg-gray-800 text-white
@@ -295,7 +295,7 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
       </main>
 
       {/* Fixed Bottom Save Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-surface-50 via-surface-50 to-transparent pt-8 safe-bottom">
+      <div className="fixed bottom-0 start-0 end-0 p-5 bg-gradient-to-t from-surface-50 via-surface-50 to-transparent pt-8 safe-bottom">
         <Button onClick={handleSave} disabled={!canSave} size="large">
           {saving ? t('add.saving') : t('add.saveEntry')}
         </Button>

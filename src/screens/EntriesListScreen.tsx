@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { ViewToggle } from '@/components/ViewToggle';
 import { EntriesMapView } from '@/components/EntriesMapView';
-import { t } from '@/lib/i18n';
+import { t, translateTypeName, formatLocalizedDate, getLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { getTypeColor } from '@/lib/storage';
 import type { Entry } from '@/types';
@@ -43,21 +43,23 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
     if (diffDays === 0) return t('entries.today');
     if (diffDays === 1) return t('entries.yesterday');
 
-    return date.toLocaleDateString('en-US', {
+    return formatLocalizedDate(date, {
       month: 'short',
       day: 'numeric',
     });
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('en-US', {
+    const date = new Date(dateString);
+    const lang = getLanguage();
+    return date.toLocaleTimeString(lang === 'he' ? 'he-IL' : 'en-US', {
       hour: 'numeric',
       minute: '2-digit',
     });
   };
 
   const truncateAddress = (address: string | null) => {
-    if (!address) return 'Unknown location';
+    if (!address) return t('entries.unknownLocation');
     const parts = address.split(',');
     return parts.slice(0, 2).join(',');
   };
@@ -142,7 +144,7 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
                   className="inline-block px-2.5 py-0.5 rounded-lg text-sm font-semibold text-white"
                   style={{ backgroundColor: getTypeColor(entry.type) }}
                 >
-                  {entry.type}
+                  {translateTypeName(entry.type)}
                 </span>
                 <span className="text-elderly-sm text-gray-400 flex-shrink-0">
                   {formatTime(entry.created_at)}
@@ -206,7 +208,7 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
       <button
         onClick={onAddEntry}
         className="
-          fixed bottom-6 right-6
+          fixed bottom-6 end-6
           w-16 h-16 min-h-0
           rounded-full
           bg-gradient-primary text-white

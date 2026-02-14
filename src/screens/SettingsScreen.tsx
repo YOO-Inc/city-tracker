@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
-import { t } from '@/lib/i18n';
+import { t, getLanguage, setLanguage, translateTypeName } from '@/lib/i18n';
+import type { Language } from '@/lib/i18n';
 import { getEntryTypes, setEntryTypes, TYPE_COLORS, EntryTypeConfig } from '@/lib/storage';
 
 const DEFAULT_ENTRY_TYPES: EntryTypeConfig[] = [
@@ -17,10 +18,16 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
   const [types, setTypes] = useState<EntryTypeConfig[]>([]);
   const [newTypeName, setNewTypeName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [currentLang, setCurrentLang] = useState<Language>(getLanguage);
 
   useEffect(() => {
     setTypes(getEntryTypes());
   }, []);
+
+  const handleLanguageChange = (lang: Language) => {
+    setLanguage(lang);
+    setCurrentLang(lang);
+  };
 
   const handleAddType = () => {
     const trimmed = newTypeName.trim();
@@ -65,6 +72,43 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
       <Header title={t('settings.title')} onBack={onBack} />
 
       <main className="flex-1 p-5 space-y-5 animate-fade-in">
+        {/* Language Section */}
+        <div className="bg-white rounded-3xl p-5 shadow-soft border border-surface-100">
+          <h2 className="text-elderly-lg font-semibold text-gray-900 mb-4">
+            {t('settings.language')}
+          </h2>
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleLanguageChange('en')}
+              className={`
+                flex-1 h-touch min-h-touch rounded-2xl
+                font-semibold text-elderly-base
+                border-2 transition-all
+                ${currentLang === 'en'
+                  ? 'bg-gradient-primary text-white border-transparent shadow-glow'
+                  : 'bg-white text-gray-700 border-surface-200 hover:border-primary-300'
+                }
+              `}
+            >
+              {t('settings.english')}
+            </button>
+            <button
+              onClick={() => handleLanguageChange('he')}
+              className={`
+                flex-1 h-touch min-h-touch rounded-2xl
+                font-semibold text-elderly-base
+                border-2 transition-all
+                ${currentLang === 'he'
+                  ? 'bg-gradient-primary text-white border-transparent shadow-glow'
+                  : 'bg-white text-gray-700 border-surface-200 hover:border-primary-300'
+                }
+              `}
+            >
+              {t('settings.hebrew')}
+            </button>
+          </div>
+        </div>
+
         {/* Entry Types Section */}
         <div className="bg-white rounded-3xl p-5 shadow-soft border border-surface-100 overflow-visible">
           <h2 className="text-elderly-lg font-semibold text-gray-900 mb-4">
@@ -136,7 +180,7 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
                       }}
                       aria-label="Change color"
                     />
-                    <div className="hidden absolute top-12 left-0 z-50 bg-white rounded-xl shadow-lg border border-surface-200 p-3 flex gap-2 flex-wrap w-48">
+                    <div className="hidden absolute top-12 start-0 z-50 bg-white rounded-xl shadow-lg border border-surface-200 p-3 flex gap-2 flex-wrap w-48">
                       {TYPE_COLORS.map((c) => (
                         <button
                           key={c.value}
@@ -155,7 +199,7 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
                   </div>
 
                   <span className="flex-1 text-elderly-base text-gray-900 font-medium">
-                    {type.name}
+                    {translateTypeName(type.name)}
                   </span>
                   <button
                     onClick={() => setDeleteConfirm(type.name)}
@@ -212,7 +256,7 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
               {t('settings.deleteConfirmTitle')}
             </h3>
             <p className="text-elderly-base text-gray-600 text-center mb-6">
-              "{deleteConfirm}"
+              "{translateTypeName(deleteConfirm)}"
             </p>
             <div className="space-y-3">
               <Button onClick={() => setDeleteConfirm(null)}>

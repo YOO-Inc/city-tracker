@@ -1,3 +1,5 @@
+import { isRTL } from '@/lib/i18n';
+
 interface HeaderProps {
   title: string;
   onBack?: () => void;
@@ -5,6 +7,8 @@ interface HeaderProps {
 }
 
 export function Header({ title, onBack, transparent = false }: HeaderProps) {
+  const rtl = isRTL();
+
   return (
     <header
       className={`
@@ -17,7 +21,7 @@ export function Header({ title, onBack, transparent = false }: HeaderProps) {
           <button
             onClick={onBack}
             className="
-              -ml-2 mr-3
+              -ms-2 me-3
               w-12 h-12 min-h-0
               flex items-center justify-center
               rounded-2xl
@@ -29,11 +33,12 @@ export function Header({ title, onBack, transparent = false }: HeaderProps) {
             aria-label="Go back"
           >
             <svg
-              className="w-7 h-7"
+              className={`w-7 h-7 ${rtl ? '' : ''}`}
               fill="none"
               stroke="currentColor"
               strokeWidth={2.5}
               viewBox="0 0 24 24"
+              style={{ transform: rtl ? 'scaleX(-1)' : undefined }}
             >
               <path
                 strokeLinecap="round"

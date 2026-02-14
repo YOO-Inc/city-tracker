@@ -7,7 +7,7 @@ Mobile-first React web app for logging entries (electricity boards, billboards, 
 - **Frontend**: React 18 + TypeScript + Vite
 - **Backend**: Supabase (PostgreSQL + Storage)
 - **Styling**: Tailwind CSS with elderly-optimized design tokens
-- **i18n**: JSON-based (`src/locales/en.json`)
+- **i18n**: JSON-based with RTL support (`src/locales/en.json`, `src/locales/he.json`)
 
 ## Node & Package Manager
 
@@ -62,10 +62,101 @@ src/
 ├── screens/        # Full-page screens (HomeScreen, AddEntryScreen)
 ├── hooks/          # Custom React hooks (useGeolocation, usePhotoUpload, useSnackbar)
 ├── lib/            # Utilities (supabase client, i18n, localStorage helpers)
-├── locales/        # Translation files (en.json)
+├── locales/        # Translation files (en.json, he.json)
 ├── types/          # TypeScript type definitions
 ├── App.tsx         # Main app with screen navigation
 └── main.tsx        # React entry point
+```
+
+## Internationalization (i18n)
+
+### CRITICAL: Adding New Text/Copy
+**When adding ANY user-facing text, you MUST add it to BOTH locale files:**
+1. `src/locales/en.json` - English translation
+2. `src/locales/he.json` - Hebrew translation
+
+The TypeScript compiler will error if keys don't match between files.
+
+### Using Translations
+```typescript
+import { t, translateTypeName } from '@/lib/i18n';
+
+// Basic translation
+t('home.title')  // Returns localized string
+
+// For entry type names (stored in English in DB, displayed localized)
+translateTypeName('Electricity Board')  // Returns "לוח חשמל" in Hebrew mode
+```
+
+### i18n Functions (from `src/lib/i18n.ts`)
+| Function | Purpose |
+|----------|---------|
+| `t(key)` | Get translated string by key |
+| `getLanguage()` | Get current language ('en' \| 'he') |
+| `setLanguage(lang)` | Change language (persists to localStorage) |
+| `isRTL()` | Check if current language is RTL |
+| `translateTypeName(name)` | Translate default entry type names |
+| `formatLocalizedDate(date, options)` | Format date for current locale |
+| `formatLocalizedTime(date, options)` | Format time for current locale |
+
+### Adding New Default Entry Types
+If adding new default entry types, register translations in `src/lib/i18n.ts`:
+```typescript
+const TYPE_TRANSLATIONS: Record<string, Record<Language, string>> = {
+  'Electricity Board': { en: 'Electricity Board', he: 'לוח חשמל' },
+  'Billboard': { en: 'Billboard', he: 'שלט פרסום' },
+  // Add new types here
+};
+```
+
+## RTL (Right-to-Left) Support
+
+### CRITICAL: Use RTL-Safe CSS
+The app supports Hebrew (RTL). **Never use directional CSS properties directly.**
+
+### CSS Property Mapping
+| DON'T USE | USE INSTEAD | Notes |
+|-----------|-------------|-------|
+| `left-*` | `start-*` | Positioning |
+| `right-*` | `end-*` | Positioning |
+| `ml-*` | `ms-*` | Margin-left → margin-inline-start |
+| `mr-*` | `me-*` | Margin-right → margin-inline-end |
+| `pl-*` | `ps-*` | Padding-left → padding-inline-start |
+| `pr-*` | `pe-*` | Padding-right → padding-inline-end |
+| `text-left` | `text-start` | Text alignment |
+| `text-right` | `text-end` | Text alignment |
+
+### RTL Utilities (defined in `src/index.css`)
+```css
+/* Logical positioning */
+.start-0, .start-4, .start-5, .start-6, .end-0, .end-4, .end-5, .end-6
+
+/* Logical margins */
+.ms-0 through .ms-5, .me-0 through .me-5, .-ms-2, .-me-2
+
+/* Logical padding */
+.ps-0, .ps-4, .ps-5, .ps-12, .ps-14, .pe-0, .pe-4, .pe-5, .pe-12, .pe-14
+
+/* Text alignment */
+.text-start, .text-end
+```
+
+### Flipping Icons for RTL
+For directional icons (arrows, chevrons), flip them in RTL:
+```tsx
+import { isRTL } from '@/lib/i18n';
+
+<svg style={{ transform: isRTL() ? 'scaleX(-1)' : undefined }}>
+  {/* arrow/chevron path */}
+</svg>
+```
+
+### Fixed Positioning Example
+```tsx
+// DON'T: fixed bottom-6 right-6
+// DO: fixed bottom-6 end-6
+
+<button className="fixed bottom-6 end-6">...</button>
 ```
 
 ## Design System (Elderly-Optimized)
@@ -93,13 +184,15 @@ src/
 | Column | Type | Notes |
 |--------|------|-------|
 | id | uuid | Primary key, auto-generated |
-| type | text | Entry type (e.g., "Electricity Board") |
+| type | text | Entry type in English (e.g., "Electricity Board") |
 | description | text | Optional user notes |
 | latitude | float8 | GPS latitude |
 | longitude | float8 | GPS longitude |
 | address | text | Reverse-geocoded address |
 | photo_urls | text[] | Array of storage URLs |
 | created_at | timestamptz | Auto-generated timestamp |
+
+**Note:** Entry `type` is always stored in English. Use `translateTypeName()` for display.
 
 ### Storage Bucket: `photos`
 - Public read access
@@ -111,7 +204,9 @@ src/
 2. **GPS auto-capture** - Gets location on Add screen, reverse geocodes via OpenStreetMap
 3. **Photo upload** - Up to 3 photos per entry, uploaded to Supabase Storage
 4. **Snackbar notifications** - Success/error toasts with 3s auto-dismiss
+5. **Multi-language support** - English (default) and Hebrew with full RTL support
 
 ## localStorage Keys
 - `lastEntryType`: Last selected entry type
-- `entryTypes`: Custom types array (for future settings screen)
+- `entryTypes`: Custom types array (JSON)
+- `language`: Current language ('en' | 'he')
