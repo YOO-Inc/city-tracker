@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router';
 import { HomeScreen } from '@/screens/HomeScreen';
 import { AddEntryScreen } from '@/screens/AddEntryScreen';
 import { EntriesListScreen } from '@/screens/EntriesListScreen';
@@ -7,29 +8,24 @@ import { Snackbar } from '@/components/Snackbar';
 import { useSnackbar } from '@/hooks/useSnackbar';
 import { supabase } from '@/lib/supabase';
 import { t, initLanguage, subscribeToLanguageChange } from '@/lib/i18n';
-import type { Screen } from '@/types';
 
 export interface TypeCount {
   type: string;
   count: number;
 }
 
-export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('home');
+function AppRoutes() {
+  const navigate = useNavigate();
   const [typeCounts, setTypeCounts] = useState<TypeCount[]>([]);
   const [loading, setLoading] = useState(true);
-  const [, setLanguageKey] = useState(0); // Force re-render on language change
+  const [, setLanguageKey] = useState(0);
   const { snackbar, showSuccess, showError, hide } = useSnackbar();
 
-  // Initialize language on mount
   useEffect(() => {
     initLanguage();
-
-    // Subscribe to language changes to trigger re-render
     const unsubscribe = subscribeToLanguageChange(() => {
       setLanguageKey((k) => k + 1);
     });
-
     return unsubscribe;
   }, []);
 
@@ -55,24 +51,8 @@ export default function App() {
     fetchTypeCounts();
   }, []);
 
-  const handleAddEntry = () => {
-    setCurrentScreen('add');
-  };
-
-  const handleViewEntries = () => {
-    setCurrentScreen('entries');
-  };
-
-  const handleOpenSettings = () => {
-    setCurrentScreen('settings');
-  };
-
-  const handleBack = () => {
-    setCurrentScreen('home');
-  };
-
   const handleSaved = () => {
-    setCurrentScreen('home');
+    navigate('/');
     showSuccess(t('snackbar.saved'));
     fetchTypeCounts();
   };
@@ -83,36 +63,54 @@ export default function App() {
 
   return (
     <>
-      {currentScreen === 'home' && (
-        <HomeScreen
-          onAddEntry={handleAddEntry}
-          onViewEntries={handleViewEntries}
-          onOpenSettings={handleOpenSettings}
-          typeCounts={typeCounts}
-          loading={loading}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomeScreen
+              onAddEntry={() => navigate('/add')}
+              onViewEntries={() => navigate('/entries')}
+              onOpenSettings={() => navigate('/settings')}
+              typeCounts={typeCounts}
+              loading={loading}
+            />
+          }
         />
-      )}
-
-      {currentScreen === 'add' && (
-        <AddEntryScreen
-          onBack={handleBack}
-          onSaved={handleSaved}
-          onError={handleError}
+        <Route
+          path="/add"
+          element={
+            <AddEntryScreen
+              onBack={() => navigate(-1)}
+              onSaved={handleSaved}
+              onError={handleError}
+            />
+          }
         />
-      )}
-
-      {currentScreen === 'entries' && (
-        <EntriesListScreen
-          onBack={handleBack}
-          onAddEntry={handleAddEntry}
+        <Route
+          path="/entries"
+          element={
+            <EntriesListScreen
+              onBack={() => navigate(-1)}
+              onAddEntry={() => navigate('/add')}
+            />
+          }
         />
-      )}
-
-      {currentScreen === 'settings' && (
-        <SettingsScreen onBack={handleBack} />
-      )}
-
+        <Route
+          path="/settings"
+          element={
+            <SettingsScreen onBack={() => navigate(-1)} />
+          }
+        />
+      </Routes>
       <Snackbar snackbar={snackbar} onClose={hide} />
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }
