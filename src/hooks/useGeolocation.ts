@@ -8,6 +8,19 @@ interface UseGeolocationResult {
   retry: () => void;
 }
 
+async function fetchAddress(lat: number, lon: number, lang: 'en' | 'he'): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=${lang}`
+    );
+    const data = await response.json();
+    return data.display_name || null;
+  } catch {
+    console.warn(`Could not reverse geocode address (${lang})`);
+    return null;
+  }
+}
+
 export function useGeolocation(): UseGeolocationResult {
   const [location, setLocation] = useState<LocationData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,18 +41,13 @@ export function useGeolocation(): UseGeolocationResult {
       async (position) => {
         const { latitude, longitude } = position.coords;
 
-        let address: string | null = null;
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-          );
-          const data = await response.json();
-          address = data.display_name || null;
-        } catch {
-          console.warn('Could not reverse geocode address');
-        }
+        // Fetch addresses in both languages in parallel
+        const [address, address_he] = await Promise.all([
+          fetchAddress(latitude, longitude, 'en'),
+          fetchAddress(latitude, longitude, 'he'),
+        ]);
 
-        setLocation({ latitude, longitude, address });
+        setLocation({ latitude, longitude, address, address_he });
         setLoading(false);
       },
       (err) => {

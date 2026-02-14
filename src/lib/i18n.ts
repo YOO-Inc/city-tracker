@@ -142,3 +142,14 @@ export function plural(count: number, singular: string, plural: string): string 
   // Hebrew uses different plural rules, but for simplicity we use count-based
   return count === 1 ? singular : plural;
 }
+
+// Get localized address based on current language
+export function getLocalizedAddress(
+  address: string | null,
+  address_he: string | null
+): string | null {
+  if (currentLanguage === 'he') {
+    return address_he || address; // Fallback to English if Hebrew not available
+  }
+  return address;
+}

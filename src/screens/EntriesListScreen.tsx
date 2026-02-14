@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { ViewToggle } from '@/components/ViewToggle';
 import { EntriesMapView } from '@/components/EntriesMapView';
-import { t, translateTypeName, formatLocalizedDate, getLanguage } from '@/lib/i18n';
+import { t, translateTypeName, formatLocalizedDate, getLanguage, getLocalizedAddress } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { getTypeColor } from '@/lib/storage';
 import type { Entry } from '@/types';
@@ -58,9 +58,10 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
     });
   };
 
-  const truncateAddress = (address: string | null) => {
-    if (!address) return t('entries.unknownLocation');
-    const parts = address.split(',');
+  const truncateAddress = (address: string | null, address_he: string | null = null) => {
+    const localizedAddress = getLocalizedAddress(address, address_he);
+    if (!localizedAddress) return t('entries.unknownLocation');
+    const parts = localizedAddress.split(',');
     return parts.slice(0, 2).join(',');
   };
 
@@ -152,7 +153,7 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
               </div>
 
               <p className="text-elderly-base text-gray-700 font-medium mt-1.5 truncate">
-                {truncateAddress(entry.address)}
+                {truncateAddress(entry.address, entry.address_he)}
               </p>
 
               {entry.description && (

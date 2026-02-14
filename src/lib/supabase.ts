@@ -41,6 +41,7 @@ export async function createEntry(entry: {
   latitude: number;
   longitude: number;
   address: string | null;
+  address_he: string | null;
   photo_urls: string[];
 }) {
   const { data, error } = await supabase

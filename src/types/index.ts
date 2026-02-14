@@ -5,6 +5,7 @@ export interface Entry {
   latitude: number;
   longitude: number;
   address: string | null;
+  address_he: string | null;
   photo_urls: string[];
   created_at: string;
 }
@@ -19,6 +20,7 @@ export interface LocationData {
   latitude: number;
   longitude: number;
   address: string | null;
+  address_he: string | null;
 }
 
 export type Screen = 'home' | 'add' | 'entries' | 'settings';

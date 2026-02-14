@@ -6,6 +6,7 @@ CREATE TABLE entries (
   latitude FLOAT8 NOT NULL,
   longitude FLOAT8 NOT NULL,
   address TEXT,
+  address_he TEXT,
   photo_urls TEXT[] DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
