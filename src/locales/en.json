@@ -13,6 +13,7 @@
     "locationError": "Could not get location",
     "locationErrorSoft": "Waiting for GPS signal",
     "retryLocation": "Try again",
+    "refreshLocation": "Refresh location",
     "type": "Type",
     "selectType": "Select type",
     "photos": "Photos",
