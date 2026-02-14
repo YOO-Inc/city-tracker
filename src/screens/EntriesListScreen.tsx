@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { ViewToggle } from '@/components/ViewToggle';
 import { EntriesMapView } from '@/components/EntriesMapView';
-import { t, translateTypeName, formatLocalizedDate, getLanguage, getLocalizedAddress } from '@/lib/i18n';
+import { t, translateTypeName, formatLocalizedDate, getLanguage, getDisplayAddress } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { getTypeColor } from '@/lib/storage';
 import type { Entry } from '@/types';
@@ -58,9 +58,8 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
     });
   };
 
-  const getDisplayAddress = (address: string | null, address_he: string | null = null) => {
-    const localizedAddress = getLocalizedAddress(address, address_he);
-    return localizedAddress || t('entries.unknownLocation');
+  const getEntryAddress = (address: string | null, address_he: string | null = null) => {
+    return getDisplayAddress(address, address_he) || t('entries.unknownLocation');
   };
 
   const renderListView = () => {
@@ -151,7 +150,7 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
               </div>
 
               <p className="text-elderly-base text-gray-700 font-medium mt-1.5 truncate">
-                {getDisplayAddress(entry.address, entry.address_he)}
+                {getEntryAddress(entry.address, entry.address_he)}
               </p>
 
               {entry.description && (
@@ -198,7 +197,7 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
             entries={entries}
             formatDate={formatDate}
             formatTime={formatTime}
-            getDisplayAddress={getDisplayAddress}
+            getEntryAddress={getEntryAddress}
           />
         )}
       </main>

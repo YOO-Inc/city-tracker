@@ -40,7 +40,7 @@ interface EntriesMapViewProps {
   entries: Entry[];
   formatDate: (dateString: string) => string;
   formatTime: (dateString: string) => string;
-  getDisplayAddress: (address: string | null, address_he?: string | null) => string;
+  getEntryAddress: (address: string | null, address_he?: string | null) => string;
 }
 
 function fitMapToEntries(map: L.Map, entries: Entry[]) {
@@ -118,7 +118,7 @@ export function EntriesMapView({
   entries,
   formatDate,
   formatTime,
-  getDisplayAddress,
+  getEntryAddress,
 }: EntriesMapViewProps) {
   const validEntries = entries.filter(
     (e) => e.latitude != null && e.longitude != null
@@ -197,7 +197,7 @@ export function EntriesMapView({
                       {translateTypeName(entry.type)}
                     </span>
                     <p className="text-sm text-gray-700 font-medium mt-1 truncate">
-                      {getDisplayAddress(entry.address, entry.address_he)}
+                      {getEntryAddress(entry.address, entry.address_he)}
                     </p>
                   </div>
                 </div>

@@ -153,3 +153,26 @@ export function getLocalizedAddress(
   }
   return address;
 }
+
+// Format address for display (shorter version: street, city, postcode)
+export function formatAddressForDisplay(fullAddress: string | null): string | null {
+  if (!fullAddress) return null;
+
+  // Split by comma and take first 3 meaningful parts
+  const parts = fullAddress.split(',').map(p => p.trim());
+
+  // Usually: street, neighborhood/area, city, district, postcode, country
+  // We want: street, city, postcode (approximately first 3 parts)
+  const shortParts = parts.slice(0, 3);
+
+  return shortParts.join(', ');
+}
+
+// Get localized and formatted address for display
+export function getDisplayAddress(
+  address: string | null,
+  address_he: string | null
+): string | null {
+  const localized = getLocalizedAddress(address, address_he);
+  return formatAddressForDisplay(localized);
+}
