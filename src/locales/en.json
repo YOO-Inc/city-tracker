@@ -1,0 +1,29 @@
+{
+  "home": {
+    "title": "City Tracker",
+    "addNewEntry": "Add new entry"
+  },
+  "add": {
+    "title": "Add Entry",
+    "gettingLocation": "Getting your location...",
+    "locationFound": "Location found",
+    "locationError": "Could not get location",
+    "type": "Type",
+    "selectType": "Select type",
+    "photos": "Photos",
+    "addPhoto": "Add Photo",
+    "photosHint": "Up to 3 photos",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional notes...",
+    "save": "Save",
+    "saving": "Saving..."
+  },
+  "snackbar": {
+    "saved": "Saved successfully!",
+    "error": "Something went wrong. Try again."
+  },
+  "types": {
+    "electricity": "Electricity Board",
+    "billboard": "Billboard"
+  }
+}
