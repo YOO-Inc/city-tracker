@@ -141,16 +141,22 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
                     <span className="inline-block px-2.5 py-0.5 rounded-lg bg-primary-100 text-primary-700 text-sm font-semibold">
                       {entry.type}
                     </span>
-                    <span className="text-sm text-gray-400 flex-shrink-0">
+                    <span className="text-elderly-sm text-gray-400 flex-shrink-0">
                       {formatTime(entry.created_at)}
                     </span>
                   </div>
 
-                  <p className="text-gray-700 font-medium mt-1.5 truncate">
+                  <p className="text-elderly-base text-gray-700 font-medium mt-1.5 truncate">
                     {truncateAddress(entry.address)}
                   </p>
 
-                  <div className="flex items-center gap-3 mt-1.5 text-sm text-gray-400">
+                  {entry.description && (
+                    <p className="text-elderly-sm text-gray-500 mt-1 line-clamp-2">
+                      {entry.description}
+                    </p>
+                  )}
+
+                  <div className="flex items-center gap-3 mt-1.5 text-elderly-sm text-gray-400">
                     <span>{formatDate(entry.created_at)}</span>
                     {entry.photo_urls && entry.photo_urls.length > 0 && (
                       <span className="flex items-center gap-1">

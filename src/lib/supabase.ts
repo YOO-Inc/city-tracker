@@ -14,7 +14,9 @@ export const supabase = createClient(
 
 export async function uploadPhoto(file: File): Promise<string | null> {
   const fileExt = file.name.split('.').pop();
-  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+  const now = new Date();
+  const utcDate = now.toISOString().replace(/[:.]/g, '-').slice(0, -5) + 'Z';
+  const fileName = `${utcDate}-${Math.random().toString(36).substring(2)}.${fileExt}`;
   const filePath = `${fileName}`;
 
   const { error } = await supabase.storage
