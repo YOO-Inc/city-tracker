@@ -150,11 +150,19 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
                     : t('add.locationFound')
                 }
               </p>
-              {(location?.address || location?.address_he) && (
-                <p className="text-sm text-gray-500 mt-1 line-clamp-2 leading-relaxed">
-                  {getDisplayAddress(location.address, location.address_he)}
-                </p>
-              )}
+              {(location?.address || location?.address_he) && (() => {
+                const addr = getDisplayAddress(location.address, location.address_he);
+                return (
+                  <div className="mt-1">
+                    {addr.street && (
+                      <p className="text-sm text-gray-700 font-medium">{addr.street}</p>
+                    )}
+                    {addr.cityZip && (
+                      <p className="text-xs text-gray-400 mt-0.5">{addr.cityZip}</p>
+                    )}
+                  </div>
+                );
+              })()}
               {!locationLoading && (
                 <button
                   onClick={retry}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { ViewToggle } from '@/components/ViewToggle';
 import { EntriesMapView } from '@/components/EntriesMapView';
-import { t, translateTypeName, formatLocalizedDate, getLanguage, getDisplayAddress } from '@/lib/i18n';
+import { t, translateTypeName, formatLocalizedDate, getLanguage, getDisplayAddress, FormattedAddress } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { getTypeColor } from '@/lib/storage';
 import type { Entry } from '@/types';
@@ -58,8 +58,12 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
     });
   };
 
-  const getEntryAddress = (address: string | null, address_he: string | null = null) => {
-    return getDisplayAddress(address, address_he) || t('entries.unknownLocation');
+  const getEntryAddress = (address: string | null, address_he: string | null = null): FormattedAddress => {
+    const formatted = getDisplayAddress(address, address_he);
+    if (!formatted.street && !formatted.cityZip) {
+      return { street: t('entries.unknownLocation'), cityZip: null };
+    }
+    return formatted;
   };
 
   const renderListView = () => {
@@ -149,9 +153,21 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
                 </span>
               </div>
 
-              <p className="text-elderly-base text-gray-700 font-medium mt-1.5 truncate">
-                {getEntryAddress(entry.address, entry.address_he)}
-              </p>
+              {(() => {
+                const addr = getEntryAddress(entry.address, entry.address_he);
+                return (
+                  <div className="mt-1.5">
+                    <p className="text-elderly-base text-gray-700 font-medium truncate">
+                      {addr.street}
+                    </p>
+                    {addr.cityZip && (
+                      <p className="text-elderly-sm text-gray-400 truncate">
+                        {addr.cityZip}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               {entry.description && (
                 <p className="text-elderly-sm text-gray-500 mt-1 line-clamp-2">

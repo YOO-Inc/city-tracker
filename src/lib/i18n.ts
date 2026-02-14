@@ -154,25 +154,35 @@ export function getLocalizedAddress(
   return address;
 }
 
-// Format address for display (shorter version: street, city, postcode)
-export function formatAddressForDisplay(fullAddress: string | null): string | null {
-  if (!fullAddress) return null;
+export interface FormattedAddress {
+  street: string | null;
+  cityZip: string | null;
+}
 
-  // Split by comma and take first 3 meaningful parts
+// Format address for display (street on line 1, city+zip on line 2)
+export function formatAddressForDisplay(fullAddress: string | null): FormattedAddress {
+  if (!fullAddress) return { street: null, cityZip: null };
+
+  // Split by comma
   const parts = fullAddress.split(',').map(p => p.trim());
 
   // Usually: street, neighborhood/area, city, district, postcode, country
-  // We want: street, city, postcode (approximately first 3 parts)
-  const shortParts = parts.slice(0, 3);
+  // Line 1: street (first part)
+  // Line 2: city + zip (parts 2-3 or similar)
+  const street = parts[0] || null;
 
-  return shortParts.join(', ');
+  // Find city and zip from remaining parts
+  const remainingParts = parts.slice(1, 4).filter(Boolean);
+  const cityZip = remainingParts.length > 0 ? remainingParts.join(', ') : null;
+
+  return { street, cityZip };
 }
 
 // Get localized and formatted address for display
 export function getDisplayAddress(
   address: string | null,
   address_he: string | null
-): string | null {
+): FormattedAddress {
   const localized = getLocalizedAddress(address, address_he);
   return formatAddressForDisplay(localized);
 }

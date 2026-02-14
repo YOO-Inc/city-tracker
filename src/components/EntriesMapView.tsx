@@ -40,7 +40,7 @@ interface EntriesMapViewProps {
   entries: Entry[];
   formatDate: (dateString: string) => string;
   formatTime: (dateString: string) => string;
-  getEntryAddress: (address: string | null, address_he?: string | null) => string;
+  getEntryAddress: (address: string | null, address_he?: string | null) => { street: string | null; cityZip: string | null };
 }
 
 function fitMapToEntries(map: L.Map, entries: Entry[]) {
@@ -196,9 +196,21 @@ export function EntriesMapView({
                     >
                       {translateTypeName(entry.type)}
                     </span>
-                    <p className="text-sm text-gray-700 font-medium mt-1 truncate">
-                      {getEntryAddress(entry.address, entry.address_he)}
-                    </p>
+                    {(() => {
+                      const addr = getEntryAddress(entry.address, entry.address_he);
+                      return (
+                        <div className="mt-1">
+                          <p className="text-sm text-gray-700 font-medium truncate">
+                            {addr.street}
+                          </p>
+                          {addr.cityZip && (
+                            <p className="text-xs text-gray-400 truncate">
+                              {addr.cityZip}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
                 {entry.description && (
