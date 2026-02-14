@@ -58,11 +58,9 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
     });
   };
 
-  const truncateAddress = (address: string | null, address_he: string | null = null) => {
+  const getDisplayAddress = (address: string | null, address_he: string | null = null) => {
     const localizedAddress = getLocalizedAddress(address, address_he);
-    if (!localizedAddress) return t('entries.unknownLocation');
-    const parts = localizedAddress.split(',');
-    return parts.slice(0, 2).join(',');
+    return localizedAddress || t('entries.unknownLocation');
   };
 
   const renderListView = () => {
@@ -153,7 +151,7 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
               </div>
 
               <p className="text-elderly-base text-gray-700 font-medium mt-1.5 truncate">
-                {truncateAddress(entry.address, entry.address_he)}
+                {getDisplayAddress(entry.address, entry.address_he)}
               </p>
 
               {entry.description && (
@@ -200,7 +198,7 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
             entries={entries}
             formatDate={formatDate}
             formatTime={formatTime}
-            truncateAddress={truncateAddress}
+            getDisplayAddress={getDisplayAddress}
           />
         )}
       </main>

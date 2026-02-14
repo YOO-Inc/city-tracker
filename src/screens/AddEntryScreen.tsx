@@ -5,7 +5,7 @@ import { Input } from '@/components/Input';
 import { LoadingOverlay } from '@/components/LoadingOverlay';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { usePhotoUpload } from '@/hooks/usePhotoUpload';
-import { t, translateTypeName } from '@/lib/i18n';
+import { t, translateTypeName, getLocalizedAddress } from '@/lib/i18n';
 import { getLastEntryType, setLastEntryType, getEntryTypes, getTypeColor } from '@/lib/storage';
 import { createEntry } from '@/lib/supabase';
 
@@ -150,9 +150,9 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
                     : t('add.locationFound')
                 }
               </p>
-              {location?.address && (
+              {(location?.address || location?.address_he) && (
                 <p className="text-sm text-gray-500 mt-1 line-clamp-2 leading-relaxed">
-                  {location.address}
+                  {getLocalizedAddress(location.address, location.address_he)}
                 </p>
               )}
               {!locationLoading && (
