@@ -31,7 +31,9 @@
     "empty": "No locations yet",
     "emptyHint": "Tap + to add your first location",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "listView": "List",
+    "mapView": "Map"
   },
   "snackbar": {
     "saved": "Location saved!",

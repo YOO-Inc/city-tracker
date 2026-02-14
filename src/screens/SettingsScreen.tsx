@@ -2,16 +2,19 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { t } from '@/lib/i18n';
-import { getEntryTypes, setEntryTypes } from '@/lib/storage';
+import { getEntryTypes, setEntryTypes, TYPE_COLORS, EntryTypeConfig } from '@/lib/storage';
 
-const DEFAULT_ENTRY_TYPES = ['Electricity Board', 'Billboard'];
+const DEFAULT_ENTRY_TYPES: EntryTypeConfig[] = [
+  { name: 'Electricity Board', color: '#3B82F6' },
+  { name: 'Billboard', color: '#F59E0B' },
+];
 
 interface SettingsScreenProps {
   onBack: () => void;
 }
 
 export function SettingsScreen({ onBack }: SettingsScreenProps) {
-  const [types, setTypes] = useState<string[]>([]);
+  const [types, setTypes] = useState<EntryTypeConfig[]>([]);
   const [newTypeName, setNewTypeName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
@@ -22,9 +25,14 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
   const handleAddType = () => {
     const trimmed = newTypeName.trim();
     if (!trimmed) return;
-    if (types.includes(trimmed)) return;
+    if (types.some((t) => t.name === trimmed)) return;
 
-    const updated = [...types, trimmed];
+    // Pick a color not yet used, or cycle through
+    const usedColors = types.map((t) => t.color);
+    const availableColor = TYPE_COLORS.find((c) => !usedColors.includes(c.value))?.value
+      ?? TYPE_COLORS[types.length % TYPE_COLORS.length].value;
+
+    const updated = [...types, { name: trimmed, color: availableColor }];
     setTypes(updated);
     setEntryTypes(updated);
     setNewTypeName('');
@@ -33,10 +41,18 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
   const handleDeleteType = (typeToDelete: string) => {
     if (types.length <= 1) return;
 
-    const updated = types.filter((t) => t !== typeToDelete);
+    const updated = types.filter((t) => t.name !== typeToDelete);
     setTypes(updated);
     setEntryTypes(updated);
     setDeleteConfirm(null);
+  };
+
+  const handleColorChange = (typeName: string, newColor: string) => {
+    const updated = types.map((t) =>
+      t.name === typeName ? { ...t, color: newColor } : t
+    );
+    setTypes(updated);
+    setEntryTypes(updated);
   };
 
   const handleResetDefaults = () => {
@@ -50,7 +66,7 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
 
       <main className="flex-1 p-5 space-y-5 animate-fade-in">
         {/* Entry Types Section */}
-        <div className="bg-white rounded-3xl p-5 shadow-soft border border-surface-100">
+        <div className="bg-white rounded-3xl p-5 shadow-soft border border-surface-100 overflow-visible">
           <h2 className="text-elderly-lg font-semibold text-gray-900 mb-4">
             {t('settings.entryTypes')}
           </h2>
@@ -98,21 +114,51 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
               {t('settings.noTypes')}
             </p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-3 overflow-visible">
               {types.map((type) => (
                 <li
-                  key={type}
+                  key={type.name}
                   className="
-                    flex items-center justify-between
+                    flex items-center gap-3
                     p-4 rounded-2xl
                     bg-surface-50 border border-surface-200
+                    overflow-visible
                   "
                 >
-                  <span className="text-elderly-base text-gray-900 font-medium">
-                    {type}
+                  {/* Color picker */}
+                  <div className="relative">
+                    <button
+                      className="w-10 h-10 min-h-0 rounded-full border-2 border-white shadow-md"
+                      style={{ backgroundColor: type.color }}
+                      onClick={(e) => {
+                        const menu = e.currentTarget.nextElementSibling;
+                        menu?.classList.toggle('hidden');
+                      }}
+                      aria-label="Change color"
+                    />
+                    <div className="hidden absolute top-12 left-0 z-50 bg-white rounded-xl shadow-lg border border-surface-200 p-3 flex gap-2 flex-wrap w-48">
+                      {TYPE_COLORS.map((c) => (
+                        <button
+                          key={c.value}
+                          className={`w-9 h-9 min-h-0 rounded-full border-3 ${
+                            type.color === c.value ? 'border-gray-900' : 'border-transparent'
+                          } hover:scale-110 active:scale-95`}
+                          style={{ backgroundColor: c.value }}
+                          onClick={(e) => {
+                            handleColorChange(type.name, c.value);
+                            e.currentTarget.parentElement?.classList.add('hidden');
+                          }}
+                          aria-label={c.label}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <span className="flex-1 text-elderly-base text-gray-900 font-medium">
+                    {type.name}
                   </span>
                   <button
-                    onClick={() => setDeleteConfirm(type)}
+                    onClick={() => setDeleteConfirm(type.name)}
                     disabled={types.length <= 1}
                     className="
                       w-12 h-12 min-h-0
@@ -124,7 +170,7 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
                       focus:outline-none focus-visible:ring-4 focus-visible:ring-red-400/50
                       disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-400
                     "
-                    aria-label={`Delete ${type}`}
+                    aria-label={`Delete ${type.name}`}
                   >
                     <svg
                       className="w-6 h-6"

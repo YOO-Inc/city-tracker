@@ -9,20 +9,35 @@ import { supabase } from '@/lib/supabase';
 import { t } from '@/lib/i18n';
 import type { Screen } from '@/types';
 
+export interface TypeCount {
+  type: string;
+  count: number;
+}
+
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
-  const [entryCount, setEntryCount] = useState(0);
+  const [typeCounts, setTypeCounts] = useState<TypeCount[]>([]);
   const { snackbar, showSuccess, showError, hide } = useSnackbar();
 
-  const fetchEntryCount = async () => {
-    const { count } = await supabase
+  const fetchTypeCounts = async () => {
+    const { data } = await supabase
       .from('entries')
-      .select('*', { count: 'exact', head: true });
-    setEntryCount(count || 0);
+      .select('type');
+
+    if (data) {
+      const counts = data.reduce<Record<string, number>>((acc, entry) => {
+        acc[entry.type] = (acc[entry.type] || 0) + 1;
+        return acc;
+      }, {});
+
+      setTypeCounts(
+        Object.entries(counts).map(([type, count]) => ({ type, count }))
+      );
+    }
   };
 
   useEffect(() => {
-    fetchEntryCount();
+    fetchTypeCounts();
   }, []);
 
   const handleAddEntry = () => {
@@ -44,7 +59,7 @@ export default function App() {
   const handleSaved = () => {
     setCurrentScreen('home');
     showSuccess(t('snackbar.saved'));
-    fetchEntryCount();
+    fetchTypeCounts();
   };
 
   const handleError = () => {
@@ -58,7 +73,7 @@ export default function App() {
           onAddEntry={handleAddEntry}
           onViewEntries={handleViewEntries}
           onOpenSettings={handleOpenSettings}
-          entryCount={entryCount}
+          typeCounts={typeCounts}
         />
       )}
 

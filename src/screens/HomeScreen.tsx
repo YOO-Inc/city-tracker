@@ -1,13 +1,16 @@
 import { t } from '@/lib/i18n';
+import { getTypeColor } from '@/lib/storage';
+import type { TypeCount } from '@/App';
 
 interface HomeScreenProps {
   onAddEntry: () => void;
   onViewEntries: () => void;
   onOpenSettings: () => void;
-  entryCount?: number;
+  typeCounts?: TypeCount[];
 }
 
-export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, entryCount = 0 }: HomeScreenProps) {
+export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCounts = [] }: HomeScreenProps) {
+  const totalCount = typeCounts.reduce((sum, tc) => sum + tc.count, 0);
   return (
     <div className="min-h-screen min-h-[100dvh] flex flex-col bg-gradient-to-b from-white via-surface-50 to-surface-100">
       {/* Header */}
@@ -130,13 +133,13 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, entryCou
               />
             </svg>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <span className="text-elderly-lg font-semibold text-gray-900 block">
               {t('home.viewEntries')}
             </span>
-            {entryCount > 0 && (
-              <span className="text-primary-600 text-elderly-base font-semibold mt-0.5 block">
-                {entryCount} {entryCount === 1 ? 'location' : 'locations'} logged
+            {totalCount > 0 && (
+              <span className="text-gray-500 text-elderly-sm mt-0.5 block">
+                {totalCount} {totalCount === 1 ? 'location' : 'locations'} saved
               </span>
             )}
           </div>
@@ -155,8 +158,34 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, entryCou
           </svg>
         </button>
 
+        {/* Summary Card */}
+        {typeCounts.length > 0 && (
+          <div className="mt-5 p-5 rounded-3xl bg-white border-2 border-surface-200 shadow-soft">
+            <h3 className="text-elderly-base font-semibold text-gray-700 mb-4">Summary</h3>
+            <div className="space-y-3">
+              {typeCounts.map((tc) => (
+                <div
+                  key={tc.type}
+                  className="flex items-center gap-3"
+                >
+                  <span
+                    className="w-8 h-8 rounded-full flex-shrink-0 border-2 border-white shadow-md"
+                    style={{ backgroundColor: getTypeColor(tc.type) }}
+                  />
+                  <span className="flex-1 text-elderly-base font-medium text-gray-900">
+                    {tc.type}
+                  </span>
+                  <span className="text-elderly-lg font-bold text-gray-700">
+                    {tc.count}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Empty state hint */}
-        {entryCount === 0 && (
+        {totalCount === 0 && (
           <p className="text-center text-sm text-gray-400 mt-4">
             {t('home.emptyHint')}
           </p>

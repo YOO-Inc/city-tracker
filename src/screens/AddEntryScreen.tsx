@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
-import { Select } from '@/components/Select';
 import { Input } from '@/components/Input';
 import { LoadingOverlay } from '@/components/LoadingOverlay';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { usePhotoUpload } from '@/hooks/usePhotoUpload';
 import { t } from '@/lib/i18n';
-import { getLastEntryType, setLastEntryType, getEntryTypes } from '@/lib/storage';
+import { getLastEntryType, setLastEntryType, getEntryTypes, getTypeColor } from '@/lib/storage';
 import { createEntry } from '@/lib/supabase';
 
 interface AddEntryScreenProps {
@@ -23,7 +22,8 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
   const [entryTypes] = useState(getEntryTypes);
   const [selectedType, setSelectedType] = useState(() => {
     const lastType = getLastEntryType();
-    return lastType && entryTypes.includes(lastType) ? lastType : entryTypes[0];
+    const typeNames = entryTypes.map((t) => t.name);
+    return lastType && typeNames.includes(lastType) ? lastType : entryTypes[0]?.name ?? '';
   });
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
@@ -32,10 +32,6 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
     setLastEntryType(selectedType);
   }, [selectedType]);
 
-  const typeOptions = entryTypes.map((type) => ({
-    value: type,
-    label: type,
-  }));
 
   const handleSave = async () => {
     if (!location) return;
@@ -173,14 +169,53 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
           </div>
         </div>
 
-        {/* Type Selection - Dropdown */}
+        {/* Type Selection - Dropdown with color indicator */}
         <div className="bg-white rounded-3xl p-5 shadow-soft border border-surface-100">
-          <Select
-            label={t('add.type')}
-            options={typeOptions}
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-          />
+          <label className="block text-elderly-base font-medium text-gray-700 mb-3">
+            {t('add.type')}
+          </label>
+          <div className="relative">
+            <span
+              className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full z-10"
+              style={{ backgroundColor: getTypeColor(selectedType) }}
+            />
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="
+                w-full h-touch min-h-touch
+                pl-14 pr-12 rounded-2xl
+                text-elderly-base font-medium text-gray-900
+                bg-white border-2 border-surface-200
+                shadow-soft
+                focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-400/20
+                hover:border-surface-300
+                appearance-none
+                cursor-pointer
+              "
+            >
+              {entryTypes.map((type) => (
+                <option key={type.name} value={type.name}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg
+                className="w-6 h-6 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
         </div>
 
         {/* Photo Section */}
