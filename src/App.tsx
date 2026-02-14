@@ -17,6 +17,7 @@ export interface TypeCount {
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [typeCounts, setTypeCounts] = useState<TypeCount[]>([]);
+  const [loading, setLoading] = useState(true);
   const { snackbar, showSuccess, showError, hide } = useSnackbar();
 
   const fetchTypeCounts = async () => {
@@ -34,6 +35,7 @@ export default function App() {
         Object.entries(counts).map(([type, count]) => ({ type, count }))
       );
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -74,6 +76,7 @@ export default function App() {
           onViewEntries={handleViewEntries}
           onOpenSettings={handleOpenSettings}
           typeCounts={typeCounts}
+          loading={loading}
         />
       )}
 

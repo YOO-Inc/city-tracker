@@ -188,7 +188,7 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
       <main className="flex-1 p-5 pb-24">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-10 h-10 border-3 border-surface-200 border-t-primary-500 rounded-full animate-spin" />
+            <div className="w-10 h-10 border-[3px] border-surface-200 border-t-primary-500 rounded-full animate-spin" />
           </div>
         ) : viewMode === 'list' ? (
           renderListView()
