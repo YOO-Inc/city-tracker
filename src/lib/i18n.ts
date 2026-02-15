@@ -23,8 +23,9 @@ const translations: Record<Language, typeof en> = {
 
 // Default entry type translations (English name -> Hebrew display name)
 const TYPE_TRANSLATIONS: Record<string, Record<Language, string>> = {
-  'Electricity Board': { en: 'Electricity Board', he: 'לוח חשמל' },
-  'Billboard': { en: 'Billboard', he: 'שלט פרסום' },
+  'electricity_board': { en: 'Electricity Board', he: 'ארון תקשורת' },
+  'bus_stop': { en: 'Bus Stop', he: 'תחנת אוטובוס' },
+  'billboard': { en: 'Billboard', he: 'בילבורד' },
 };
 
 const LANGUAGE_STORAGE_KEY = 'language';

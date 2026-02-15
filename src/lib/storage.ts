@@ -18,8 +18,9 @@ export const TYPE_COLORS = [
 ];
 
 const DEFAULT_ENTRY_TYPES: EntryTypeConfig[] = [
-  { name: 'Electricity Board', color: '#3B82F6' },
-  { name: 'Billboard', color: '#F59E0B' },
+  { name: 'electricity_board', color: '#3B82F6' },
+  { name: 'bus_stop', color: '#10B981' },
+  { name: 'billboard', color: '#F59E0B' },
 ];
 
 export function getLastEntryType(): string | null {
