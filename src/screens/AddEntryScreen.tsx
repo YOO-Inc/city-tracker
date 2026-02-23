@@ -48,6 +48,8 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
         longitude: location.longitude,
         address: location.address,
         address_he: location.address_he,
+        address_en_structured: location.address_en_structured,
+        address_he_structured: location.address_he_structured,
         photo_urls: photoUrls,
       });
 

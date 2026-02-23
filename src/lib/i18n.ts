@@ -81,7 +81,7 @@ export function subscribeToLanguageChange(listener: () => void): () => void {
   };
 }
 
-export function t(key: TranslationKey): string {
+export function t(key: TranslationKey, params?: Record<string, string | number>): string {
   const keys = key.split('.');
   let value: unknown = translations[currentLanguage];
 
@@ -94,7 +94,16 @@ export function t(key: TranslationKey): string {
     }
   }
 
-  return typeof value === 'string' ? value : key;
+  let result = typeof value === 'string' ? value : key;
+
+  // Replace parameters like {count} with actual values
+  if (params) {
+    for (const [param, val] of Object.entries(params)) {
+      result = result.replace(new RegExp(`\\{${param}\\}`, 'g'), String(val));
+    }
+  }
+
+  return result;
 }
 
 // Translate type name for display (English stored in DB -> localized display)
@@ -186,4 +195,10 @@ export function getDisplayAddress(
 ): FormattedAddress {
   const localized = getLocalizedAddress(address, address_he);
   return formatAddressForDisplay(localized);
+}
+
+// Get localized export success message with count
+export function getExportSuccessMessage(count: number): string {
+  const countLabel = count === 1 ? t('home.location') : t('home.locations');
+  return t('settings.exportSuccess', { count, countLabel });
 }

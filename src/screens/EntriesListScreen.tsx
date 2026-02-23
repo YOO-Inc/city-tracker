@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { ViewToggle } from '@/components/ViewToggle';
 import { EntriesMapView } from '@/components/EntriesMapView';
+import { ExportModal } from '@/components/ExportModal';
 import { t, translateTypeName, formatLocalizedDate, getLanguage, getDisplayAddress, FormattedAddress } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { getTypeColor } from '@/lib/storage';
@@ -10,12 +11,15 @@ import type { Entry } from '@/types';
 interface EntriesListScreenProps {
   onBack: () => void;
   onAddEntry: () => void;
+  showSuccess: (message: string) => void;
+  showError: (message: string) => void;
 }
 
-export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps) {
+export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }: EntriesListScreenProps) {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [showExport, setShowExport] = useState(false);
 
   useEffect(() => {
     async function fetchEntries() {
@@ -195,7 +199,30 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
 
   return (
     <div className="min-h-screen min-h-[100dvh] flex flex-col bg-surface-50">
-      <Header title={t('entries.title')} onBack={onBack} />
+      <Header
+        title={t('entries.title')}
+        onBack={onBack}
+        action={{
+          icon: (
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+              />
+            </svg>
+          ),
+          onClick: () => setShowExport(true),
+          disabled: entries.length === 0,
+          label: t('entries.export'),
+        }}
+      />
 
       <div className="px-5 pt-4">
         <ViewToggle value={viewMode} onChange={setViewMode} />
@@ -249,6 +276,15 @@ export function EntriesListScreen({ onBack, onAddEntry }: EntriesListScreenProps
           />
         </svg>
       </button>
+
+      {/* Export Modal */}
+      <ExportModal
+        visible={showExport}
+        onClose={() => setShowExport(false)}
+        showSuccess={showSuccess}
+        showError={showError}
+        totalCount={entries.length}
+      />
     </div>
   );
 }

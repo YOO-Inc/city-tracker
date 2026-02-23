@@ -39,7 +39,8 @@
     "yesterday": "Yesterday",
     "listView": "List",
     "mapView": "Map",
-    "unknownLocation": "Unknown location"
+    "unknownLocation": "Unknown location",
+    "export": "Export"
   },
   "snackbar": {
     "saved": "Location saved!",
@@ -57,10 +58,18 @@
     "noTypes": "No types configured",
     "resetDefaults": "Reset to Defaults",
     "deleteConfirmTitle": "Delete this type?",
-    "cancel": "No, Keep It",
+    "cancel": "Cancel",
     "deleteType": "Yes, Delete",
     "language": "Language",
     "english": "English",
-    "hebrew": "עברית"
+    "hebrew": "עברית",
+    "exportTitle": "Export Data",
+    "exportAll": "All",
+    "exporting": "Exporting...",
+    "selectDate": "Select a date",
+    "exportByDate": "Specific date",
+    "noEntriesExport": "No entries to export",
+    "exportSuccess": "Exported {count} {countLabel}",
+    "noDatesAvailable": "No dates available"
   }
 }

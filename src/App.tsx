@@ -92,6 +92,8 @@ function AppRoutes() {
             <EntriesListScreen
               onBack={() => navigate(-1)}
               onAddEntry={() => navigate('/add')}
+              showSuccess={showSuccess}
+              showError={showError}
             />
           }
         />

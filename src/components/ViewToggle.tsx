@@ -11,8 +11,8 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
       <button
         onClick={() => onChange('list')}
         className={`
-          flex-1 h-14 min-h-0 rounded-lg
-          flex items-center justify-center gap-2
+          flex-1 h-14 min-h-0 px-3 rounded-lg
+          flex items-center justify-center gap-1.5
           font-semibold text-elderly-base
           transition-all duration-200
           ${value === 'list'
@@ -40,8 +40,8 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
       <button
         onClick={() => onChange('map')}
         className={`
-          flex-1 h-14 min-h-0 rounded-lg
-          flex items-center justify-center gap-2
+          flex-1 h-14 min-h-0 px-3 rounded-lg
+          flex items-center justify-center gap-1.5
           font-semibold text-elderly-base
           transition-all duration-200
           ${value === 'map'

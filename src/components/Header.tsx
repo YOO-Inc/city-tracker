@@ -1,12 +1,20 @@
 import { isRTL } from '@/lib/i18n';
 
+interface HeaderAction {
+  icon: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  label: string;
+}
+
 interface HeaderProps {
   title: string;
   onBack?: () => void;
   transparent?: boolean;
+  action?: HeaderAction;
 }
 
-export function Header({ title, onBack, transparent = false }: HeaderProps) {
+export function Header({ title, onBack, transparent = false, action }: HeaderProps) {
   const rtl = isRTL();
 
   return (
@@ -48,9 +56,29 @@ export function Header({ title, onBack, transparent = false }: HeaderProps) {
             </svg>
           </button>
         )}
-        <h1 className="text-elderly-xl font-bold text-gray-900 tracking-tight">
+        <h1 className="flex-1 text-elderly-xl font-bold text-gray-900 tracking-tight">
           {title}
         </h1>
+        {action && (
+          <button
+            onClick={action.onClick}
+            disabled={action.disabled}
+            className="
+              -me-2 ms-3
+              w-12 h-12 min-h-0
+              flex items-center justify-center
+              rounded-2xl
+              text-gray-500
+              hover:bg-surface-100 hover:text-gray-700
+              active:bg-surface-200
+              focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-400/50
+              disabled:opacity-40 disabled:cursor-not-allowed
+            "
+            aria-label={action.label}
+          >
+            {action.icon}
+          </button>
+        )}
       </div>
     </header>
   );

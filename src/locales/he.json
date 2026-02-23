@@ -39,7 +39,8 @@
     "yesterday": "אתמול",
     "listView": "רשימה",
     "mapView": "מפה",
-    "unknownLocation": "מיקום לא ידוע"
+    "unknownLocation": "מיקום לא ידוע",
+    "export": "ייצוא"
   },
   "snackbar": {
     "saved": "המיקום נשמר!",
@@ -57,10 +58,18 @@
     "noTypes": "לא הוגדרו סוגים",
     "resetDefaults": "אפס לברירת מחדל",
     "deleteConfirmTitle": "למחוק את הסוג הזה?",
-    "cancel": "לא, השאר",
+    "cancel": "ביטול",
     "deleteType": "כן, מחק",
     "language": "שפה",
     "english": "English",
-    "hebrew": "עברית"
+    "hebrew": "עברית",
+    "exportTitle": "ייצוא נתונים",
+    "exportAll": "הכל",
+    "exporting": "מייצא...",
+    "selectDate": "בחר תאריך",
+    "exportByDate": "תאריך ספציפי",
+    "noEntriesExport": "אין רשומות לייצוא",
+    "exportSuccess": "יוצאו {count} {countLabel}",
+    "noDatesAvailable": "אין תאריכים זמינים"
   }
 }
