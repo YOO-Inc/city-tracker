@@ -21,13 +21,6 @@ const translations: Record<Language, typeof en> = {
   he: he as typeof en,
 };
 
-// Default entry type translations (English name -> Hebrew display name)
-const TYPE_TRANSLATIONS: Record<string, Record<Language, string>> = {
-  'electricity_board': { en: 'Electricity Board', he: 'ארון תקשורת' },
-  'bus_stop': { en: 'Bus Stop', he: 'תחנת אוטובוס' },
-  'billboard': { en: 'Billboard', he: 'בילבורד' },
-};
-
 const LANGUAGE_STORAGE_KEY = 'language';
 
 let currentLanguage: Language = 'en';
@@ -108,25 +101,8 @@ export function t(key: TranslationKey, params?: Record<string, string | number>)
 
 // Translate type name for display (English stored in DB -> localized display)
 export function translateTypeName(englishName: string): string {
-  const translation = TYPE_TRANSLATIONS[englishName];
-  if (translation) {
-    return translation[currentLanguage];
-  }
-  // If no predefined translation, return as-is
-  return englishName;
-}
-
-// Register a custom type translation (for user-created types)
-export function registerTypeTranslation(
-  englishName: string,
-  translations: Record<Language, string>
-): void {
-  TYPE_TRANSLATIONS[englishName] = translations;
-}
-
-// Get all registered type translations
-export function getTypeTranslations(): Record<string, Record<Language, string>> {
-  return { ...TYPE_TRANSLATIONS };
+  const types = translations[currentLanguage].types as Record<string, string>;
+  return types[englishName] ?? englishName;
 }
 
 // Format date according to current locale

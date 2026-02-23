@@ -47,22 +47,16 @@
     "error": "Something went wrong. Try again."
   },
   "types": {
-    "electricity": "Electricity Board",
+    "electricity_board": "Electricity Board",
+    "bus_stop": "Bus Stop",
     "billboard": "Billboard"
   },
   "settings": {
     "title": "Settings",
-    "entryTypes": "Location Types",
-    "newTypePlaceholder": "New type name...",
-    "addType": "Add",
-    "noTypes": "No types configured",
-    "resetDefaults": "Reset to Defaults",
-    "deleteConfirmTitle": "Delete this type?",
-    "cancel": "Cancel",
-    "deleteType": "Yes, Delete",
     "language": "Language",
     "english": "English",
     "hebrew": "עברית",
+    "cancel": "Cancel",
     "exportTitle": "Export Data",
     "exportAll": "All",
     "exporting": "Exporting...",

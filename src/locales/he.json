@@ -47,22 +47,16 @@
     "error": "משהו השתבש. נסה שוב."
   },
   "types": {
-    "electricity": "לוח חשמל",
-    "billboard": "שלט פרסום"
+    "electricity_board": "ארון תקשורת",
+    "bus_stop": "תחנת אוטובוס",
+    "billboard": "בילבורד"
   },
   "settings": {
     "title": "הגדרות",
-    "entryTypes": "סוגי מיקומים",
-    "newTypePlaceholder": "שם סוג חדש...",
-    "addType": "הוסף",
-    "noTypes": "לא הוגדרו סוגים",
-    "resetDefaults": "אפס לברירת מחדל",
-    "deleteConfirmTitle": "למחוק את הסוג הזה?",
-    "cancel": "ביטול",
-    "deleteType": "כן, מחק",
     "language": "שפה",
     "english": "English",
     "hebrew": "עברית",
+    "cancel": "ביטול",
     "exportTitle": "ייצוא נתונים",
     "exportAll": "הכל",
     "exporting": "מייצא...",
