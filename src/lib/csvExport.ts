@@ -90,8 +90,9 @@ export function generateCSV(entries: Entry[]): string {
     'עיר',           // City
     'מיקוד',         // Postcode
     'כתובת מלאה',    // Full Address
-    'מספר תמונות',   // Photo Count
-    'קישורי תמונות', // Photo URLs
+    'תמונה',         // Photo 1
+    'תמונה 2',       // Photo 2
+    'תמונה 3',       // Photo 3
   ];
 
   const rows = entries.map(entry => {
@@ -122,9 +123,10 @@ export function generateCSV(entries: Entry[]): string {
       escapeCSVValue(entry.city_he),
       escapeCSVValue(entry.postcode_he),
       escapeCSVValue(entry.address_he),
-      // Photos
-      entry.photo_urls?.length || 0,
-      escapeCSVValue(entry.photo_urls?.join(';')),
+      // Photos (up to 3 separate columns)
+      escapeCSVValue(entry.photo_urls?.[0]),
+      escapeCSVValue(entry.photo_urls?.[1]),
+      escapeCSVValue(entry.photo_urls?.[2]),
     ].join(',');
   });
 
