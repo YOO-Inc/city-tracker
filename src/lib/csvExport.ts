@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { t } from './i18n';
+import { t, translateTypeName } from './i18n';
 import type { Entry } from '@/types';
 
 interface ExportOptions {
@@ -74,64 +74,59 @@ function escapeCSVValue(value: string | number | null | undefined): string {
 
 /**
  * Generate CSV content from entries
- * Column order optimized for Hebrew readers
+ * Hebrew-accessible format with translated headers and values
  */
 export function generateCSV(entries: Entry[]): string {
   const headers = [
-    // 1. Core fields
-    'ID',
-    'Type',
-    'Description',
-    'Created At',
-    // 2. Location
-    'Latitude',
-    'Longitude',
-    // 3. HE address fields (primary for Hebrew readers)
-    'Street (HE)',
-    'House Number (HE)',
-    'Neighborhood (HE)',
-    'City (HE)',
-    'Postcode (HE)',
-    'Display Address (HE)',
-    // 4. Photos
-    'Photo Count',
-    'Photo URLs',
-    // 5. EN address fields (secondary)
-    'Street (EN)',
-    'House Number (EN)',
-    'Neighborhood (EN)',
-    'City (EN)',
-    'Postcode (EN)',
-    'Display Address (EN)',
+    'סוג',           // Type
+    'תאריך',         // Date
+    'שעה',           // Time
+    'קו רוחב',       // Latitude
+    'קו אורך',       // Longitude
+    'קישור למפה',    // Google Maps Link
+    'רחוב',          // Street
+    'מספר בית',      // House Number
+    'שכונה',         // Neighborhood
+    'עיר',           // City
+    'מיקוד',         // Postcode
+    'כתובת מלאה',    // Full Address
+    'מספר תמונות',   // Photo Count
+    'קישורי תמונות', // Photo URLs
   ];
 
-  const rows = entries.map(entry => [
-    // 1. Core fields
-    escapeCSVValue(entry.id),
-    escapeCSVValue(entry.type),
-    escapeCSVValue(entry.description),
-    entry.created_at,
-    // 2. Location
-    entry.latitude,
-    entry.longitude,
-    // 3. HE address (primary)
-    escapeCSVValue(entry.street_he),
-    escapeCSVValue(entry.house_number_he),
-    escapeCSVValue(entry.neighborhood_he),
-    escapeCSVValue(entry.city_he),
-    escapeCSVValue(entry.postcode_he),
-    escapeCSVValue(entry.address_he),
-    // 4. Photos
-    entry.photo_urls?.length || 0,
-    escapeCSVValue(entry.photo_urls?.join(';')),
-    // 5. EN address (secondary)
-    escapeCSVValue(entry.street_en),
-    escapeCSVValue(entry.house_number_en),
-    escapeCSVValue(entry.neighborhood_en),
-    escapeCSVValue(entry.city_en),
-    escapeCSVValue(entry.postcode_en),
-    escapeCSVValue(entry.address),
-  ].join(','));
+  const rows = entries.map(entry => {
+    // Parse and format date/time in Hebrew locale
+    const createdDate = new Date(entry.created_at);
+    const dateStr = createdDate.toLocaleDateString('he-IL');
+    const timeStr = createdDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+
+    // Generate Google Maps link
+    const mapsLink = entry.latitude && entry.longitude
+      ? `https://www.google.com/maps?q=${entry.latitude},${entry.longitude}`
+      : '';
+
+    return [
+      // Type (translated to Hebrew)
+      escapeCSVValue(translateTypeName(entry.type)),
+      // Date and Time
+      escapeCSVValue(dateStr),
+      escapeCSVValue(timeStr),
+      // Location coordinates
+      entry.latitude,
+      entry.longitude,
+      escapeCSVValue(mapsLink),
+      // Hebrew address fields
+      escapeCSVValue(entry.street_he),
+      escapeCSVValue(entry.house_number_he),
+      escapeCSVValue(entry.neighborhood_he),
+      escapeCSVValue(entry.city_he),
+      escapeCSVValue(entry.postcode_he),
+      escapeCSVValue(entry.address_he),
+      // Photos
+      entry.photo_urls?.length || 0,
+      escapeCSVValue(entry.photo_urls?.join(';')),
+    ].join(',');
+  });
 
   return [headers.join(','), ...rows].join('\n');
 }
