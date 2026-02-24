@@ -23,7 +23,7 @@ const translations: Record<Language, typeof en> = {
 
 const LANGUAGE_STORAGE_KEY = 'language';
 
-let currentLanguage: Language = 'en';
+let currentLanguage: Language = 'he';
 let listeners: Array<() => void> = [];
 
 export function initLanguage(): void {
