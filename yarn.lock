@@ -1631,6 +1631,7 @@ __metadata:
     react-dom: "npm:^18.3.1"
     react-leaflet: "npm:4"
     react-router: "npm:^7.13.0"
+    react-zoom-pan-pinch: "npm:^3.7.0"
     supabase: "npm:^2.76.8"
     tailwindcss: "npm:^3.4.14"
     tsx: "npm:^4.21.0"
@@ -3205,6 +3206,16 @@ __metadata:
     react-dom:
       optional: true
   checksum: 10c0/397cb009bc83d071269c8f9323bbfe1f856721fde75e39b29fe0ddfe7564ebdc3b8bbb85768321cae92ec28b406e8fac7eab7e232d0738b3b1c092e2764e4307
+  languageName: node
+  linkType: hard
+
+"react-zoom-pan-pinch@npm:^3.7.0":
+  version: 3.7.0
+  resolution: "react-zoom-pan-pinch@npm:3.7.0"
+  peerDependencies:
+    react: "*"
+    react-dom: "*"
+  checksum: 10c0/96889849800a953128fe7f9e42bed0d5cbc48d03024995b136f5e972146236688efb24d7381d8e6f09598f5512b4897d2420f62d828a665fdf24b745b7d55911
   languageName: node
   linkType: hard
 

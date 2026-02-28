@@ -40,7 +40,7 @@ interface EntriesMapViewProps {
   entries: Entry[];
   formatDate: (dateString: string) => string;
   formatTime: (dateString: string) => string;
-  getEntryAddress: (address: string | null, address_he?: string | null) => { street: string | null; cityZip: string | null };
+  getEntryAddress: (entry: Entry) => { street: string | null; cityZip: string | null };
 }
 
 function fitMapToEntries(map: L.Map, entries: Entry[]) {
@@ -178,8 +178,8 @@ export function EntriesMapView({
             icon={getIconForColor(color)}
           >
             <Popup>
-              <div className="min-w-[200px] max-w-[280px]">
-                <div className="flex items-start gap-3">
+              <div className="min-w-[200px] max-w-[280px]" dir={isRTL() ? 'rtl' : 'ltr'}>
+                <div className={`flex items-start gap-3 ${isRTL() ? 'flex-row-reverse' : ''}`}>
                   {entry.photo_urls && entry.photo_urls.length > 0 && (
                     <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
                       <img
@@ -197,7 +197,7 @@ export function EntriesMapView({
                       {translateTypeName(entry.type)}
                     </span>
                     {(() => {
-                      const addr = getEntryAddress(entry.address, entry.address_he);
+                      const addr = getEntryAddress(entry);
                       return (
                         <div className="mt-1">
                           <p className="text-sm text-gray-700 font-medium truncate">

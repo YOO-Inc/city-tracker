@@ -71,5 +71,12 @@
   "update": {
     "available": "A new version is available",
     "refresh": "Refresh"
+  },
+  "preview": {
+    "close": "Close",
+    "noPhotos": "No photos",
+    "zoomHint": "Pinch to zoom",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   }
 }

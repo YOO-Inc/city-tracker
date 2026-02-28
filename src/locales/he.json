@@ -71,5 +71,12 @@
   "update": {
     "available": "גרסה חדשה זמינה",
     "refresh": "רענן"
+  },
+  "preview": {
+    "close": "סגור",
+    "noPhotos": "אין תמונות",
+    "zoomHint": "צבוט לזום",
+    "zoomIn": "הגדל",
+    "zoomOut": "הקטן"
   }
 }

@@ -5,7 +5,7 @@ import { Input } from '@/components/Input';
 import { LoadingOverlay } from '@/components/LoadingOverlay';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { usePhotoUpload } from '@/hooks/usePhotoUpload';
-import { t, translateTypeName, getDisplayAddress } from '@/lib/i18n';
+import { t, translateTypeName, getLocationDisplayAddress } from '@/lib/i18n';
 import { getLastEntryType, setLastEntryType, getEntryTypes, getTypeColor } from '@/lib/storage';
 import { createEntry } from '@/lib/supabase';
 
@@ -152,8 +152,8 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
                     : t('add.locationFound')
                 }
               </p>
-              {(location?.address || location?.address_he) && (() => {
-                const addr = getDisplayAddress(location.address, location.address_he);
+              {(location?.address_en_structured || location?.address_he_structured) && (() => {
+                const addr = getLocationDisplayAddress(location.address_en_structured, location.address_he_structured);
                 return (
                   <div className="mt-1">
                     {addr.street && (

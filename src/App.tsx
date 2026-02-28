@@ -6,6 +6,7 @@ import { EntriesListScreen } from '@/screens/EntriesListScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 import { Snackbar } from '@/components/Snackbar';
 import { useSnackbar } from '@/hooks/useSnackbar';
+import { useVersionCheck } from '@/hooks/useVersionCheck';
 import { supabase } from '@/lib/supabase';
 import { t, initLanguage, subscribeToLanguageChange } from '@/lib/i18n';
 
@@ -20,6 +21,7 @@ function AppRoutes() {
   const [loading, setLoading] = useState(true);
   const [, setLanguageKey] = useState(0);
   const { snackbar, showSuccess, showError, hide } = useSnackbar();
+  const { updateAvailable, refresh } = useVersionCheck();
 
   useEffect(() => {
     initLanguage();
@@ -104,6 +106,17 @@ function AppRoutes() {
           }
         />
       </Routes>
+      {updateAvailable && (
+        <div className="fixed bottom-20 start-4 end-4 bg-primary text-white p-4 rounded-lg shadow-lg flex items-center justify-between z-50">
+          <span className="text-elderly-base">{t('update.available')}</span>
+          <button
+            onClick={refresh}
+            className="bg-white text-primary px-4 py-2 rounded font-bold"
+          >
+            {t('update.refresh')}
+          </button>
+        </div>
+      )}
       <Snackbar snackbar={snackbar} onClose={hide} />
     </>
   );

@@ -3,7 +3,8 @@ import { Header } from '@/components/Header';
 import { ViewToggle } from '@/components/ViewToggle';
 import { EntriesMapView } from '@/components/EntriesMapView';
 import { ExportModal } from '@/components/ExportModal';
-import { t, translateTypeName, formatLocalizedDate, getLanguage, getDisplayAddress, FormattedAddress } from '@/lib/i18n';
+import { EntryPreviewModal } from '@/components/EntryPreviewModal';
+import { t, translateTypeName, formatLocalizedDate, getLanguage, getEntryDisplayAddress, FormattedAddress } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { getTypeColor } from '@/lib/storage';
 import type { Entry } from '@/types';
@@ -20,6 +21,7 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [showExport, setShowExport] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
 
   useEffect(() => {
     async function fetchEntries() {
@@ -62,8 +64,8 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
     });
   };
 
-  const getEntryAddress = (address: string | null, address_he: string | null = null): FormattedAddress => {
-    const formatted = getDisplayAddress(address, address_he);
+  const getEntryAddress = (entry: Entry): FormattedAddress => {
+    const formatted = getEntryDisplayAddress(entry);
     if (!formatted.street && !formatted.cityZip) {
       return { street: t('entries.unknownLocation'), cityZip: null };
     }
@@ -109,7 +111,8 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
         {entries.map((entry) => (
           <div
             key={entry.id}
-            className="bg-white rounded-2xl p-4 shadow-soft border border-surface-100 flex gap-4"
+            onClick={() => setSelectedEntry(entry)}
+            className="bg-white rounded-2xl p-4 shadow-soft border border-surface-100 flex gap-4 cursor-pointer active:bg-surface-50"
           >
             {/* Thumbnail or icon */}
             <div className="w-16 h-16 rounded-xl bg-surface-100 flex-shrink-0 overflow-hidden">
@@ -158,7 +161,7 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
               </div>
 
               {(() => {
-                const addr = getEntryAddress(entry.address, entry.address_he);
+                const addr = getEntryAddress(entry);
                 return (
                   <div className="mt-1.5">
                     <p className="text-elderly-base text-gray-700 font-medium truncate">
@@ -284,6 +287,13 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
         showSuccess={showSuccess}
         showError={showError}
         totalCount={entries.length}
+      />
+
+      {/* Entry Preview Modal */}
+      <EntryPreviewModal
+        entry={selectedEntry}
+        visible={selectedEntry !== null}
+        onClose={() => setSelectedEntry(null)}
       />
     </div>
   );

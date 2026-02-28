@@ -178,3 +178,64 @@ export function getExportSuccessMessage(count: number): string {
   const countLabel = count === 1 ? t('home.location') : t('home.locations');
   return t('settings.exportSuccess', { count, countLabel });
 }
+
+// Structured address fields interface (matches Entry type)
+interface StructuredAddressFields {
+  street_en: string | null;
+  street_he: string | null;
+  house_number_en: string | null;
+  house_number_he: string | null;
+  neighborhood_en: string | null;
+  neighborhood_he: string | null;
+  city_en: string | null;
+  city_he: string | null;
+}
+
+// Get formatted address from structured fields (preferred method)
+export function getEntryDisplayAddress(entry: StructuredAddressFields): FormattedAddress {
+  const isHebrew = currentLanguage === 'he';
+
+  const street = isHebrew ? entry.street_he : entry.street_en;
+  const houseNumber = isHebrew ? entry.house_number_he : entry.house_number_en;
+  const neighborhood = isHebrew ? entry.neighborhood_he : entry.neighborhood_en;
+  const city = isHebrew ? entry.city_he : entry.city_en;
+
+  // Build street line: "Street Name 123"
+  const streetParts = [street, houseNumber].filter(Boolean);
+  const streetLine = streetParts.length > 0 ? streetParts.join(' ') : null;
+
+  // Build city line: "Neighborhood, City" or just "City"
+  const cityParts = [neighborhood, city].filter(Boolean);
+  const cityLine = cityParts.length > 0 ? cityParts.join(', ') : null;
+
+  return { street: streetLine, cityZip: cityLine };
+}
+
+// Structured address from Nominatim (used by LocationData)
+interface NominatimStructuredAddress {
+  house_number: string | null;
+  street: string | null;
+  neighborhood: string | null;
+  city: string | null;
+}
+
+// Get formatted address from LocationData's structured address objects
+export function getLocationDisplayAddress(
+  addressEn: NominatimStructuredAddress | null,
+  addressHe: NominatimStructuredAddress | null
+): FormattedAddress {
+  const isHebrew = currentLanguage === 'he';
+  const addr = isHebrew ? (addressHe || addressEn) : addressEn;
+
+  if (!addr) return { street: null, cityZip: null };
+
+  // Build street line: "Street Name 123" or just "Street Name"
+  const streetParts = [addr.street, addr.house_number].filter(Boolean);
+  const streetLine = streetParts.length > 0 ? streetParts.join(' ') : null;
+
+  // Build city line: "Neighborhood, City" or just "City"
+  const cityParts = [addr.neighborhood, addr.city].filter(Boolean);
+  const cityLine = cityParts.length > 0 ? cityParts.join(', ') : null;
+
+  return { street: streetLine, cityZip: cityLine };
+}
