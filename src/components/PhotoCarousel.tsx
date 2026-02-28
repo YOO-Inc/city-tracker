@@ -51,16 +51,16 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
             key={index}
             className="flex-shrink-0 w-full snap-center"
           >
-            <PinchZoom enabled={isTouchDevice}>
-              <div className="flex justify-center">
+            <div className="flex justify-center">
+              <PinchZoom enabled={isTouchDevice}>
                 <img
                   src={url}
                   alt={`Photo ${index + 1}`}
                   className="h-auto max-h-[40vh] rounded-2xl"
                   draggable={false}
                 />
-              </div>
-            </PinchZoom>
+              </PinchZoom>
+            </div>
           </div>
         ))}
       </div>
