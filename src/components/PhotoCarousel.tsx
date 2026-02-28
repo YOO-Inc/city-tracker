@@ -1,17 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { PinchZoom } from './PinchZoom';
+import { useState, useRef } from 'react';
 import { t } from '@/lib/i18n';
-
-// Check if device supports touch
-function useIsTouchDevice() {
-  const [isTouch, setIsTouch] = useState(false);
-
-  useEffect(() => {
-    setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
-  }, []);
-
-  return isTouch;
-}
 
 interface PhotoCarouselProps {
   photos: string[];
@@ -20,7 +8,6 @@ interface PhotoCarouselProps {
 export function PhotoCarousel({ photos }: PhotoCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const isTouchDevice = useIsTouchDevice();
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -52,14 +39,12 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
             className="flex-shrink-0 w-full snap-center"
           >
             <div className="flex justify-center">
-              <PinchZoom enabled={isTouchDevice}>
-                <img
-                  src={url}
-                  alt={`Photo ${index + 1}`}
-                  className="h-auto max-h-[40vh] rounded-2xl"
-                  draggable={false}
-                />
-              </PinchZoom>
+              <img
+                src={url}
+                alt={`Photo ${index + 1}`}
+                className="h-auto max-h-[40vh] rounded-2xl"
+                draggable={false}
+              />
             </div>
           </div>
         ))}
