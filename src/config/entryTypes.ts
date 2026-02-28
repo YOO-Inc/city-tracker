@@ -9,6 +9,8 @@ export const ENTRY_TYPES: EntryTypeConfig[] = [
   { name: 'electricity_board', color: '#3B82F6' },
   { name: 'bus_stop', color: '#10B981' },
   { name: 'billboard', color: '#F59E0B' },
+  { name: 'municipal_ad_board', color: '#8B5CF6' },
+  { name: 'private_ad_board', color: '#EC4899' },
 ];
 
 export function getTypeColor(typeName: string): string {

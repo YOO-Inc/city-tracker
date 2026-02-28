@@ -49,7 +49,9 @@
   "types": {
     "electricity_board": "ארון תקשורת",
     "bus_stop": "תחנת אוטובוס",
-    "billboard": "בילבורד"
+    "billboard": "בילבורד",
+    "municipal_ad_board": "שלט פרסום עירוני",
+    "private_ad_board": "שלט פרסום פרטי"
   },
   "settings": {
     "title": "הגדרות",
@@ -65,5 +67,9 @@
     "noEntriesExport": "אין רשומות לייצוא",
     "exportSuccess": "יוצאו {count} {countLabel}",
     "noDatesAvailable": "אין תאריכים זמינים"
+  },
+  "update": {
+    "available": "גרסה חדשה זמינה",
+    "refresh": "רענן"
   }
 }
