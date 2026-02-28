@@ -40,7 +40,9 @@
     "listView": "List",
     "mapView": "Map",
     "unknownLocation": "Unknown location",
-    "export": "Export"
+    "export": "Export",
+    "filterAll": "All",
+    "noFilterResults": "No entries for this type"
   },
   "snackbar": {
     "saved": "Location saved!",

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import { t, isRTL, translateTypeName } from '@/lib/i18n';
 import { getTypeColor } from '@/lib/storage';
 import type { TypeCount } from '@/App';
@@ -11,6 +12,7 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCounts = [], loading = false }: HomeScreenProps) {
+  const navigate = useNavigate();
   const totalCount = typeCounts.reduce((sum, tc) => sum + tc.count, 0);
   const rtl = isRTL();
 
@@ -180,11 +182,19 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
         ) : typeCounts.length > 0 ? (
           <div className="mt-5 p-5 rounded-3xl bg-white border-2 border-surface-200 shadow-soft">
             <h3 className="text-elderly-base font-semibold text-gray-700 mb-4">{t('home.summary')}</h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {typeCounts.map((tc) => (
-                <div
+                <button
                   key={tc.type}
-                  className="flex items-center gap-3"
+                  onClick={() => navigate(`/entries?type=${tc.type}`)}
+                  className="
+                    flex items-center gap-3 w-full
+                    p-3 -mx-3 rounded-xl
+                    hover:bg-surface-50
+                    active:bg-surface-100
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400
+                    text-start
+                  "
                 >
                   <span
                     className="w-8 h-8 rounded-full flex-shrink-0 border-2 border-white shadow-md"
@@ -193,10 +203,24 @@ export function HomeScreen({ onAddEntry, onViewEntries, onOpenSettings, typeCoun
                   <span className="flex-1 text-elderly-base font-medium text-gray-900">
                     {translateTypeName(tc.type)}
                   </span>
-                  <span className="text-elderly-lg font-bold text-gray-700">
+                  <span className="text-elderly-lg font-bold text-gray-700 me-2">
                     {tc.count}
                   </span>
-                </div>
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                    style={{ transform: rtl ? 'scaleX(-1)' : undefined }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                    />
+                  </svg>
+                </button>
               ))}
             </div>
           </div>

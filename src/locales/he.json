@@ -40,7 +40,9 @@
     "listView": "רשימה",
     "mapView": "מפה",
     "unknownLocation": "מיקום לא ידוע",
-    "export": "ייצוא"
+    "export": "ייצוא",
+    "filterAll": "הכל",
+    "noFilterResults": "אין רשומות לסוג זה"
   },
   "snackbar": {
     "saved": "המיקום נשמר!",

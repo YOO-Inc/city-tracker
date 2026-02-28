@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router';
 import { Header } from '@/components/Header';
 import { ViewToggle } from '@/components/ViewToggle';
+import { FilterChips } from '@/components/FilterChips';
 import { EntriesMapView } from '@/components/EntriesMapView';
 import { ExportModal } from '@/components/ExportModal';
 import { EntryPreviewModal } from '@/components/EntryPreviewModal';
@@ -17,11 +19,37 @@ interface EntriesListScreenProps {
 }
 
 export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }: EntriesListScreenProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [showExport, setShowExport] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+
+  // Get filter from URL
+  const typeFilter = searchParams.get('type');
+
+  // Handle filter change (replace URL to avoid history buildup)
+  const handleFilterChange = (type: string | null) => {
+    if (type) {
+      setSearchParams({ type }, { replace: true });
+    } else {
+      setSearchParams({}, { replace: true });
+    }
+  };
+
+  // Filter entries based on URL param
+  const filteredEntries = typeFilter
+    ? entries.filter((e) => e.type === typeFilter)
+    : entries;
+
+  // Compute type counts for filter chips
+  const typeCounts = useMemo(() => {
+    return entries.reduce<Record<string, number>>((acc, entry) => {
+      acc[entry.type] = (acc[entry.type] || 0) + 1;
+      return acc;
+    }, {});
+  }, [entries]);
 
   useEffect(() => {
     async function fetchEntries() {
@@ -73,7 +101,7 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
   };
 
   const renderListView = () => {
-    if (entries.length === 0) {
+    if (filteredEntries.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-20 h-20 rounded-full bg-surface-100 flex items-center justify-center mb-4">
@@ -97,10 +125,10 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
             </svg>
           </div>
           <p className="text-elderly-lg font-semibold text-gray-700">
-            {t('entries.empty')}
+            {typeFilter ? t('entries.noFilterResults') : t('entries.empty')}
           </p>
           <p className="text-gray-500 mt-1">
-            {t('entries.emptyHint')}
+            {typeFilter ? '' : t('entries.emptyHint')}
           </p>
         </div>
       );
@@ -108,7 +136,7 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
 
     return (
       <div className="space-y-3">
-        {entries.map((entry) => (
+        {filteredEntries.map((entry) => (
           <div
             key={entry.id}
             onClick={() => setSelectedEntry(entry)}
@@ -231,6 +259,15 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
         <ViewToggle value={viewMode} onChange={setViewMode} />
       </div>
 
+      <div className="px-5 pt-3">
+        <FilterChips
+          selectedType={typeFilter}
+          onChange={handleFilterChange}
+          typeCounts={typeCounts}
+          totalCount={entries.length}
+        />
+      </div>
+
       <main className="flex-1 p-5 pb-24">
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -240,7 +277,7 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
           renderListView()
         ) : (
           <EntriesMapView
-            entries={entries}
+            entries={filteredEntries}
             formatDate={formatDate}
             formatTime={formatTime}
             getEntryAddress={getEntryAddress}
@@ -286,7 +323,7 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
         onClose={() => setShowExport(false)}
         showSuccess={showSuccess}
         showError={showError}
-        totalCount={entries.length}
+        totalCount={filteredEntries.length}
       />
 
       {/* Entry Preview Modal */}
