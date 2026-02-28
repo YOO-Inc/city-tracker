@@ -79,11 +79,6 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
         </div>
       )}
 
-      {isTouchDevice && (
-        <p className="text-center text-sm text-gray-400 mt-2">
-          {t('preview.zoomHint')}
-        </p>
-      )}
     </div>
   );
 }
