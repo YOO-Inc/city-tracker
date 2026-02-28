@@ -20,13 +20,13 @@
     "supabase:reset": "supabase db reset"
   },
   "dependencies": {
+    "@react-spring/web": "^10.0.3",
     "@supabase/supabase-js": "^2.45.0",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-leaflet": "4",
-    "react-router": "^7.13.0",
-    "react-zoom-pan-pinch": "^3.7.0"
+    "react-router": "^7.13.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
