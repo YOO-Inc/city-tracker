@@ -80,5 +80,18 @@
     "zoomHint": "צבוט לזום",
     "zoomIn": "הגדל",
     "zoomOut": "הקטן"
+  },
+  "duplicate": {
+    "title": "נמצא מיקום קרוב",
+    "message": "הוספת סוג זה כאן בעבר.",
+    "progress": "{current} מתוך {total}",
+    "samePlace": "אותו מקום",
+    "differentPlace": "מקום אחר"
+  },
+  "locationChanged": {
+    "title": "זזת ממקומך",
+    "message": "זזת מאז שהתחלת. איזו כתובת לשמור?",
+    "initial": "איפה התחלת:",
+    "current": "איפה אתה עכשיו:"
   }
 }

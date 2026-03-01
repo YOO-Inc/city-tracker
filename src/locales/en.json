@@ -80,5 +80,18 @@
     "zoomHint": "Pinch to zoom",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out"
+  },
+  "duplicate": {
+    "title": "Nearby Entry Found",
+    "message": "You added this type here before.",
+    "progress": "{current} of {total}",
+    "samePlace": "Same Place",
+    "differentPlace": "Different Place"
+  },
+  "locationChanged": {
+    "title": "You've Moved",
+    "message": "You moved since starting. Which address to save?",
+    "initial": "Where you started:",
+    "current": "Where you are now:"
   }
 }

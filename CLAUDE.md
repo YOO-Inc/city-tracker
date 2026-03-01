@@ -3,6 +3,11 @@
 ## Overview
 Mobile-first React web app for logging entries (electricity boards, billboards, etc.) while walking in the city. Designed for elderly users (70+) with large touch targets, high contrast, and simple navigation.
 
+## Language Priority
+- **Hebrew-first**: The app is designed primarily for Hebrew speakers
+- Default language is Hebrew with RTL layout
+- All UI text must have Hebrew translations
+
 ## Tech Stack
 - **Frontend**: React 18 + TypeScript + Vite
 - **Backend**: Supabase (PostgreSQL + Storage)

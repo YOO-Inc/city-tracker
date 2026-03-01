@@ -84,6 +84,8 @@ interface UseGeolocationResult {
   loading: boolean;
   error: string | null;
   retry: () => void;
+  /** Get current location on-demand without triggering state updates */
+  getCurrentLocation: () => Promise<LocationData | null>;
 }
 
 export function useGeolocation(): UseGeolocationResult {
@@ -142,5 +144,47 @@ export function useGeolocation(): UseGeolocationResult {
     setAttempt((prev) => prev + 1);
   }, []);
 
-  return { location, loading, error, retry };
+  /**
+   * Get current location on-demand without triggering re-render.
+   * Useful for checking location at save time.
+   */
+  const getCurrentLocation = useCallback(async (): Promise<LocationData | null> => {
+    if (!navigator.geolocation) {
+      return null;
+    }
+
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          // Fetch addresses in both languages
+          const [enResult, heResult] = await Promise.all([
+            fetchAddress(latitude, longitude, 'en'),
+            fetchAddress(latitude, longitude, 'he'),
+          ]);
+
+          resolve({
+            latitude,
+            longitude,
+            address: enResult.displayName,
+            address_he: heResult.displayName,
+            address_en_structured: enResult.structured,
+            address_he_structured: heResult.structured,
+          });
+        },
+        () => {
+          // On error, return null silently (don't block user)
+          resolve(null);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    });
+  }, []);
+
+  return { location, loading, error, retry, getCurrentLocation };
 }

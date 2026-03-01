@@ -1,13 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { LoadingOverlay } from '@/components/LoadingOverlay';
+import { DuplicateLocationModal } from '@/components/DuplicateLocationModal';
+import { LocationChangedModal } from '@/components/LocationChangedModal';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { usePhotoUpload } from '@/hooks/usePhotoUpload';
+import { useNearbyEntries } from '@/hooks/useNearbyEntries';
 import { t, translateTypeName, getLocationDisplayAddress } from '@/lib/i18n';
 import { getLastEntryType, setLastEntryType, getEntryTypes, getTypeColor } from '@/lib/storage';
 import { createEntry } from '@/lib/supabase';
+import { calculateDistance, MOVEMENT_DETECTION_RADIUS } from '@/lib/geo';
+import type { LocationData } from '@/types';
 
 interface AddEntryScreenProps {
   onBack: () => void;
@@ -16,7 +21,7 @@ interface AddEntryScreenProps {
 }
 
 export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps) {
-  const { location, loading: locationLoading, error: locationError, retry } = useGeolocation();
+  const { location, loading: locationLoading, error: locationError, retry, getCurrentLocation } = useGeolocation();
   const { photos, addPhoto, removePhoto, uploadAllPhotos, canAddMore } = usePhotoUpload();
 
   const [entryTypes] = useState(getEntryTypes);
@@ -27,15 +32,97 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
   });
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
+  const [checkingLocation, setCheckingLocation] = useState(false);
+
+  // Store initial location when first obtained
+  const [initialLocation, setInitialLocation] = useState<LocationData | null>(null);
+  const initialLocationSet = useRef(false);
+
+  // Duplicate detection state
+  const [duplicateIndex, setDuplicateIndex] = useState(0);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicatesAcknowledged, setDuplicatesAcknowledged] = useState(false);
+
+  // Movement detection state
+  const [showLocationChangedModal, setShowLocationChangedModal] = useState(false);
+  const [pendingCurrentLocation, setPendingCurrentLocation] = useState<LocationData | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
+
+  // Fetch nearby entries of the same type
+  const { nearbyEntries } = useNearbyEntries(
+    location?.latitude ?? null,
+    location?.longitude ?? null,
+    selectedType
+  );
+
+  // Store initial location when first obtained
+  useEffect(() => {
+    if (location && !initialLocationSet.current) {
+      setInitialLocation(location);
+      initialLocationSet.current = true;
+    }
+  }, [location]);
+
+  // Reset duplicate acknowledgment and show modal when type changes or nearby entries update
+  useEffect(() => {
+    if (nearbyEntries.length > 0 && !duplicatesAcknowledged) {
+      setDuplicateIndex(0);
+      setShowDuplicateModal(true);
+    }
+  }, [nearbyEntries, duplicatesAcknowledged]);
+
+  // Reset duplicate state when type changes
+  useEffect(() => {
+    setDuplicatesAcknowledged(false);
+    setDuplicateIndex(0);
+  }, [selectedType]);
 
   useEffect(() => {
     setLastEntryType(selectedType);
   }, [selectedType]);
 
+  // Handle refresh location - reset duplicate check
+  const handleRefreshLocation = () => {
+    initialLocationSet.current = false;
+    setDuplicatesAcknowledged(false);
+    setDuplicateIndex(0);
+    retry();
+  };
 
-  const handleSave = async () => {
-    if (!location) return;
+  // Duplicate modal handlers
+  const handleSamePlace = () => {
+    // User confirmed it's the same place - go back
+    setShowDuplicateModal(false);
+    onBack();
+  };
 
+  const handleDifferentPlace = () => {
+    // Move to next duplicate or dismiss
+    if (duplicateIndex < nearbyEntries.length - 1) {
+      setDuplicateIndex((prev) => prev + 1);
+    } else {
+      // All duplicates reviewed, proceed
+      setShowDuplicateModal(false);
+      setDuplicatesAcknowledged(true);
+    }
+  };
+
+  // Location changed modal handlers
+  const handleSelectInitialLocation = () => {
+    setSelectedLocation(initialLocation);
+    setShowLocationChangedModal(false);
+    // Proceed with save using initial location
+    performSave(initialLocation!);
+  };
+
+  const handleSelectCurrentLocation = () => {
+    setSelectedLocation(pendingCurrentLocation);
+    setShowLocationChangedModal(false);
+    // Proceed with save using current location
+    performSave(pendingCurrentLocation!);
+  };
+
+  const performSave = async (locationToSave: LocationData) => {
     setSaving(true);
 
     try {
@@ -44,12 +131,12 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
       await createEntry({
         type: selectedType,
         description: description.trim() || null,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        address: location.address,
-        address_he: location.address_he,
-        address_en_structured: location.address_en_structured,
-        address_he_structured: location.address_he_structured,
+        latitude: locationToSave.latitude,
+        longitude: locationToSave.longitude,
+        address: locationToSave.address,
+        address_he: locationToSave.address_he,
+        address_en_structured: locationToSave.address_en_structured,
+        address_he_structured: locationToSave.address_he_structured,
         photo_urls: photoUrls,
       });
 
@@ -59,6 +146,42 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
       onError();
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!location || !initialLocation) return;
+
+    setCheckingLocation(true);
+
+    try {
+      // Get current location to check if user moved
+      const currentLocation = await getCurrentLocation();
+
+      if (currentLocation) {
+        const distance = calculateDistance(
+          initialLocation.latitude,
+          initialLocation.longitude,
+          currentLocation.latitude,
+          currentLocation.longitude
+        );
+
+        if (distance > MOVEMENT_DETECTION_RADIUS) {
+          // User has moved - show location choice modal
+          setPendingCurrentLocation(currentLocation);
+          setShowLocationChangedModal(true);
+          setCheckingLocation(false);
+          return;
+        }
+      }
+
+      // No significant movement or couldn't get current location - use initial
+      setCheckingLocation(false);
+      performSave(selectedLocation || initialLocation);
+    } catch {
+      // On error, proceed with initial location
+      setCheckingLocation(false);
+      performSave(initialLocation);
     }
   };
 
@@ -74,7 +197,8 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
     input.click();
   };
 
-  const canSave = !locationLoading && !locationError && location !== null && !saving;
+  const canSave = !locationLoading && !locationError && location !== null && !saving && !checkingLocation;
+  const isProcessing = saving || checkingLocation;
 
   return (
     <div className="min-h-screen min-h-[100dvh] flex flex-col bg-surface-50">
@@ -167,7 +291,7 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
               })()}
               {!locationLoading && (
                 <button
-                  onClick={retry}
+                  onClick={handleRefreshLocation}
                   className="mt-2 text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center gap-1"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -312,7 +436,30 @@ export function AddEntryScreen({ onBack, onSaved, onError }: AddEntryScreenProps
         </Button>
       </div>
 
-      <LoadingOverlay visible={saving} message={t('add.saving')} />
+      <LoadingOverlay visible={isProcessing} message={t('add.saving')} />
+
+      {/* Duplicate Location Modal */}
+      {nearbyEntries.length > 0 && nearbyEntries[duplicateIndex] && (
+        <DuplicateLocationModal
+          visible={showDuplicateModal}
+          entry={nearbyEntries[duplicateIndex]}
+          currentIndex={duplicateIndex}
+          totalCount={nearbyEntries.length}
+          onSamePlace={handleSamePlace}
+          onDifferentPlace={handleDifferentPlace}
+        />
+      )}
+
+      {/* Location Changed Modal */}
+      {initialLocation && pendingCurrentLocation && (
+        <LocationChangedModal
+          visible={showLocationChangedModal}
+          initialLocation={initialLocation}
+          currentLocation={pendingCurrentLocation}
+          onSelectInitial={handleSelectInitialLocation}
+          onSelectCurrent={handleSelectCurrentLocation}
+        />
+      )}
     </div>
   );
 }
