@@ -68,7 +68,8 @@
     "exportByDate": "תאריך ספציפי",
     "noEntriesExport": "אין רשומות לייצוא",
     "exportSuccess": "יוצאו {count} {countLabel}",
-    "noDatesAvailable": "אין תאריכים זמינים"
+    "noDatesAvailable": "אין תאריכים זמינים",
+    "contacts": "אנשי קשר"
   },
   "update": {
     "available": "גרסה חדשה זמינה",
@@ -80,6 +81,32 @@
     "zoomHint": "צבוט לזום",
     "zoomIn": "הגדל",
     "zoomOut": "הקטן"
+  },
+  "share": {
+    "button": "שתף באימייל",
+    "pickContactTitle": "שלח אל",
+    "noRecipient": "ללא נמען",
+    "cancel": "ביטול",
+    "subjectWithAddress": "{type} – {address}",
+    "subjectTypeOnly": "{type}",
+    "bodyType": "סוג",
+    "bodyAddress": "כתובת",
+    "bodyDate": "תאריך",
+    "bodyLocation": "מיקום",
+    "bodyNotes": "הערות",
+    "bodyPhotos": "תמונות",
+    "bodyFooter": "נשלח מ-City Tracker"
+  },
+  "contacts": {
+    "title": "אנשי קשר לשיתוף",
+    "empty": "אין אנשי קשר עדיין",
+    "emptyHint": "הוסף אימייל כדי שתוכל לשתף רשומות בלחיצה אחת.",
+    "namePlaceholder": "שם",
+    "emailPlaceholder": "אימייל",
+    "add": "הוסף איש קשר",
+    "remove": "הסר",
+    "invalidEmail": "נא להזין אימייל תקין",
+    "nameRequired": "נא להזין שם"
   },
   "duplicate": {
     "title": "נמצא מיקום קרוב",

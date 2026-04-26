@@ -68,7 +68,8 @@
     "exportByDate": "Specific date",
     "noEntriesExport": "No entries to export",
     "exportSuccess": "Exported {count} {countLabel}",
-    "noDatesAvailable": "No dates available"
+    "noDatesAvailable": "No dates available",
+    "contacts": "Contacts"
   },
   "update": {
     "available": "A new version is available",
@@ -80,6 +81,32 @@
     "zoomHint": "Pinch to zoom",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out"
+  },
+  "share": {
+    "button": "Share by Email",
+    "pickContactTitle": "Send to",
+    "noRecipient": "No recipient",
+    "cancel": "Cancel",
+    "subjectWithAddress": "{type} – {address}",
+    "subjectTypeOnly": "{type}",
+    "bodyType": "Type",
+    "bodyAddress": "Address",
+    "bodyDate": "Date",
+    "bodyLocation": "Location",
+    "bodyNotes": "Notes",
+    "bodyPhotos": "Photos",
+    "bodyFooter": "Sent from City Tracker"
+  },
+  "contacts": {
+    "title": "Share Contacts",
+    "empty": "No contacts yet",
+    "emptyHint": "Add an email so you can share entries with one tap.",
+    "namePlaceholder": "Name",
+    "emailPlaceholder": "Email",
+    "add": "Add Contact",
+    "remove": "Remove",
+    "invalidEmail": "Please enter a valid email",
+    "nameRequired": "Please enter a name"
   },
   "duplicate": {
     "title": "Nearby Entry Found",

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { Header } from '@/components/Header';
-import { t, getLanguage, setLanguage } from '@/lib/i18n';
+import { t, getLanguage, setLanguage, isRTL } from '@/lib/i18n';
 import type { Language } from '@/lib/i18n';
 
 interface SettingsScreenProps {
   onBack: () => void;
+  onOpenContacts: () => void;
 }
 
-export function SettingsScreen({ onBack }: SettingsScreenProps) {
+export function SettingsScreen({ onBack, onOpenContacts }: SettingsScreenProps) {
   const [currentLang, setCurrentLang] = useState<Language>(getLanguage);
+  const rtl = isRTL();
 
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang);
@@ -56,6 +58,31 @@ export function SettingsScreen({ onBack }: SettingsScreenProps) {
             </button>
           </div>
         </div>
+
+        {/* Contacts navigation row */}
+        <button
+          onClick={onOpenContacts}
+          className="
+            w-full bg-white rounded-3xl p-5 shadow-soft border border-surface-100
+            flex items-center gap-3
+            hover:border-primary-300 active:scale-[0.99] transition-all
+            focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-400/50
+          "
+        >
+          <span className="flex-1 text-elderly-lg font-semibold text-gray-900 text-start">
+            {t('settings.contacts')}
+          </span>
+          <svg
+            className="w-6 h-6 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+            style={{ transform: rtl ? 'scaleX(-1)' : undefined }}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </main>
     </div>
   );

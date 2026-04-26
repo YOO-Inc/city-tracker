@@ -4,6 +4,7 @@ import { HomeScreen } from '@/screens/HomeScreen';
 import { AddEntryScreen } from '@/screens/AddEntryScreen';
 import { EntriesListScreen } from '@/screens/EntriesListScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
+import { ContactsScreen } from '@/screens/ContactsScreen';
 import { Snackbar } from '@/components/Snackbar';
 import { useSnackbar } from '@/hooks/useSnackbar';
 import { useVersionCheck } from '@/hooks/useVersionCheck';
@@ -102,7 +103,16 @@ function AppRoutes() {
         <Route
           path="/settings"
           element={
-            <SettingsScreen onBack={() => navigate(-1)} />
+            <SettingsScreen
+              onBack={() => navigate(-1)}
+              onOpenContacts={() => navigate('/contacts')}
+            />
+          }
+        />
+        <Route
+          path="/contacts"
+          element={
+            <ContactsScreen onBack={() => navigate(-1)} />
           }
         />
       </Routes>
