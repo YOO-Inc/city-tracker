@@ -10,6 +10,7 @@ import { useSnackbar } from '@/hooks/useSnackbar';
 import { useVersionCheck } from '@/hooks/useVersionCheck';
 import { supabase } from '@/lib/supabase';
 import { t, initLanguage, subscribeToLanguageChange } from '@/lib/i18n';
+import { seedDefaultContactsIfNeeded } from '@/lib/contacts';
 
 export interface TypeCount {
   type: string;
@@ -26,6 +27,7 @@ function AppRoutes() {
 
   useEffect(() => {
     initLanguage();
+    seedDefaultContactsIfNeeded();
     const unsubscribe = subscribeToLanguageChange(() => {
       setLanguageKey((k) => k + 1);
     });
