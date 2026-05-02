@@ -6,6 +6,7 @@ import {
   addContact,
   removeContact,
   isValidEmail,
+  isValidPhone,
   type Contact,
 } from '@/lib/contacts';
 
@@ -17,23 +18,38 @@ export function ContactsScreen({ onBack }: ContactsScreenProps) {
   const [contacts, setContacts] = useState<Contact[]>(getContacts);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  const clearError = () => {
+    if (error) setError(null);
+  };
 
   const handleAddContact = () => {
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
+    const trimmedPhone = phone.trim();
     if (!trimmedName) {
       setError(t('contacts.nameRequired'));
       return;
     }
-    if (!isValidEmail(trimmedEmail)) {
+    if (!trimmedEmail && !trimmedPhone) {
+      setError(t('contacts.atLeastOne'));
+      return;
+    }
+    if (trimmedEmail && !isValidEmail(trimmedEmail)) {
       setError(t('contacts.invalidEmail'));
       return;
     }
-    addContact(trimmedName, trimmedEmail);
+    if (trimmedPhone && !isValidPhone(trimmedPhone)) {
+      setError(t('contacts.invalidPhone'));
+      return;
+    }
+    addContact(trimmedName, trimmedEmail || undefined, trimmedPhone || undefined);
     setContacts(getContacts());
     setName('');
     setEmail('');
+    setPhone('');
     setError(null);
   };
 
@@ -69,9 +85,16 @@ export function ContactsScreen({ onBack }: ContactsScreenProps) {
                     <p className="text-elderly-base font-semibold text-gray-900 truncate">
                       {contact.name}
                     </p>
-                    <p className="text-elderly-sm text-gray-500 truncate">
-                      {contact.email}
-                    </p>
+                    {contact.email && (
+                      <p className="text-elderly-sm text-gray-500 truncate" dir="ltr">
+                        {contact.email}
+                      </p>
+                    )}
+                    {contact.phone && (
+                      <p className="text-elderly-sm text-gray-500 truncate" dir="ltr">
+                        {contact.phone}
+                      </p>
+                    )}
                   </div>
                   <button
                     onClick={() => handleRemoveContact(contact.id)}
@@ -103,7 +126,7 @@ export function ContactsScreen({ onBack }: ContactsScreenProps) {
             value={name}
             onChange={(e) => {
               setName(e.target.value);
-              if (error) setError(null);
+              clearError();
             }}
             placeholder={t('contacts.namePlaceholder')}
             className="
@@ -123,9 +146,30 @@ export function ContactsScreen({ onBack }: ContactsScreenProps) {
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
-              if (error) setError(null);
+              clearError();
             }}
             placeholder={t('contacts.emailPlaceholder')}
+            dir="ltr"
+            className="
+              w-full h-touch min-h-touch px-5 rounded-2xl
+              text-elderly-base text-gray-900
+              bg-white border-2 border-surface-200
+              placeholder:text-gray-400
+              focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-400/20
+              hover:border-surface-300
+            "
+          />
+          <input
+            type="tel"
+            inputMode="tel"
+            autoCapitalize="none"
+            autoCorrect="off"
+            value={phone}
+            onChange={(e) => {
+              setPhone(e.target.value);
+              clearError();
+            }}
+            placeholder={t('contacts.phonePlaceholder')}
             dir="ltr"
             className="
               w-full h-touch min-h-touch px-5 rounded-2xl

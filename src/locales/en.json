@@ -83,7 +83,10 @@
     "zoomOut": "Zoom out"
   },
   "share": {
-    "button": "Share by Email",
+    "button": "Share",
+    "pickChannelTitle": "Share via",
+    "emailButton": "Share by Email",
+    "whatsappButton": "Share by WhatsApp",
     "pickContactTitle": "Send to",
     "noRecipient": "No recipient",
     "cancel": "Cancel",
@@ -100,12 +103,15 @@
   "contacts": {
     "title": "Share Contacts",
     "empty": "No contacts yet",
-    "emptyHint": "Add an email so you can share entries with one tap.",
+    "emptyHint": "Add an email or phone so you can share entries with one tap.",
     "namePlaceholder": "Name",
-    "emailPlaceholder": "Email",
+    "emailPlaceholder": "Email (optional)",
+    "phonePlaceholder": "Phone (optional)",
     "add": "Add Contact",
     "remove": "Remove",
     "invalidEmail": "Please enter a valid email",
+    "invalidPhone": "Please enter a valid phone number",
+    "atLeastOne": "Please enter an email or phone number",
     "nameRequired": "Please enter a name"
   },
   "duplicate": {

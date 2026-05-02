@@ -5,9 +5,15 @@ import {
   formatLocalizedDate,
   formatLocalizedTime,
 } from '@/lib/i18n';
+import { normalizePhoneForWhatsApp } from '@/lib/contacts';
 import type { Entry } from '@/types';
 
-export function buildShareEntryMailto(entry: Entry, recipient?: string): string {
+interface EntryShareText {
+  heading: string;
+  body: string;
+}
+
+function buildEntryShareText(entry: Entry): EntryShareText {
   const typeName = translateTypeName(entry.type);
   const { street, cityZip } = getEntryDisplayAddress(entry);
   const addressLine = [street, cityZip].filter(Boolean).join(', ');
@@ -21,7 +27,7 @@ export function buildShareEntryMailto(entry: Entry, recipient?: string): string 
 
   const mapsUrl = `https://www.google.com/maps?q=${entry.latitude},${entry.longitude}`;
 
-  const subject = addressLine
+  const heading = addressLine
     ? t('share.subjectWithAddress', { type: typeName, address: addressLine })
     : t('share.subjectTypeOnly', { type: typeName });
 
@@ -43,8 +49,19 @@ export function buildShareEntryMailto(entry: Entry, recipient?: string): string 
   lines.push('');
   lines.push(t('share.bodyFooter'));
 
-  const body = lines.join('\n');
+  return { heading, body: lines.join('\n') };
+}
 
+export function buildShareEntryMailto(entry: Entry, recipient?: string): string {
+  const { heading, body } = buildEntryShareText(entry);
   const to = recipient ? encodeURIComponent(recipient.trim()) : '';
-  return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  return `mailto:${to}?subject=${encodeURIComponent(heading)}&body=${encodeURIComponent(body)}`;
+}
+
+export function buildShareEntryWhatsApp(entry: Entry, phone?: string): string {
+  const { heading, body } = buildEntryShareText(entry);
+  // WhatsApp has no subject — prefix the body with the heading as a bold first line.
+  const text = `*${heading}*\n\n${body}`;
+  const number = phone ? normalizePhoneForWhatsApp(phone) : '';
+  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 }

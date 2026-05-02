@@ -83,7 +83,10 @@
     "zoomOut": "הקטן"
   },
   "share": {
-    "button": "שתף באימייל",
+    "button": "שתף",
+    "pickChannelTitle": "שתף באמצעות",
+    "emailButton": "שתף באימייל",
+    "whatsappButton": "שתף בוואטסאפ",
     "pickContactTitle": "שלח אל",
     "noRecipient": "ללא נמען",
     "cancel": "ביטול",
@@ -100,12 +103,15 @@
   "contacts": {
     "title": "אנשי קשר לשיתוף",
     "empty": "אין אנשי קשר עדיין",
-    "emptyHint": "הוסף אימייל כדי שתוכל לשתף רשומות בלחיצה אחת.",
+    "emptyHint": "הוסף אימייל או טלפון כדי שתוכל לשתף רשומות בלחיצה אחת.",
     "namePlaceholder": "שם",
-    "emailPlaceholder": "אימייל",
+    "emailPlaceholder": "אימייל (אופציונלי)",
+    "phonePlaceholder": "טלפון (אופציונלי)",
     "add": "הוסף איש קשר",
     "remove": "הסר",
     "invalidEmail": "נא להזין אימייל תקין",
+    "invalidPhone": "נא להזין מספר טלפון תקין",
+    "atLeastOne": "נא להזין אימייל או טלפון",
     "nameRequired": "נא להזין שם"
   },
   "duplicate": {
