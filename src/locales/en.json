@@ -97,8 +97,7 @@
     "bodyDate": "Date",
     "bodyLocation": "Location",
     "bodyNotes": "Notes",
-    "bodyPhotos": "Photos",
-    "bodyFooter": "Sent from City Tracker"
+    "bodyPhotos": "Photos"
   },
   "contacts": {
     "title": "Share Contacts",

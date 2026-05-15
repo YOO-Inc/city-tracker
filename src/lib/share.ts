@@ -46,8 +46,6 @@ function buildEntryShareText(entry: Entry): EntryShareText {
     lines.push(`${t('share.bodyPhotos')}:`);
     for (const url of entry.photo_urls) lines.push(url);
   }
-  lines.push('');
-  lines.push(t('share.bodyFooter'));
 
   return { heading, body: lines.join('\n') };
 }
