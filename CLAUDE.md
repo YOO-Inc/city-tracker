@@ -10,7 +10,7 @@ Mobile-first React web app for logging entries (electricity boards, billboards, 
 
 ## Tech Stack
 - **Frontend**: React 18 + TypeScript + Vite
-- **Backend**: Supabase (PostgreSQL + Storage)
+- **Backend**: Firebase (Cloud Firestore + Firebase Storage)
 - **Styling**: Tailwind CSS with elderly-optimized design tokens
 - **i18n**: JSON-based with RTL support (`src/locales/en.json`, `src/locales/he.json`)
 
@@ -33,32 +33,47 @@ yarn build      # Production build
 yarn preview    # Preview production build
 ```
 
-## Supabase Setup
+## Firebase Setup
 
-### CLI Commands
+### Project
+- **Project ID**: `city-tracker-17f45`
+- **Console**: https://console.firebase.google.com/project/city-tracker-17f45
+- **Firestore region**: `europe-west3`
+- **Storage bucket**: `city-tracker-17f45.firebasestorage.app` (`US-CENTRAL1` no-cost location)
+- **Plan**: Blaze with ₪1/month budget alert (50/90/100% thresholds)
+
+### Infrastructure as Code
+All Firebase config lives under `firebase/`:
+- `firebase/firebase.json` - CLI config
+- `firebase/firestore.rules` - Firestore security rules
+- `firebase/storage.rules` - Storage security rules
+- `firebase/firestore.indexes.json` - Composite index definitions
+
+To deploy changes after editing these:
 ```bash
-yarn supabase login      # Login to Supabase CLI
-yarn supabase:link       # Link to remote project
-yarn supabase:push       # Push migrations to remote
-yarn supabase:start      # Start local Supabase (requires Docker)
-yarn supabase:stop       # Stop local Supabase
-yarn supabase:status     # View local credentials
-yarn supabase:reset      # Reset local database
+cd firebase && npx firebase-tools deploy --project city-tracker-17f45
 ```
-
-### Migrations
-Located in `supabase/migrations/`:
-- `20260214062359_create_entries_table.sql` - Creates `entries` table with RLS
-- `20260214062410_create_photos_bucket.sql` - Creates `photos` storage bucket
+Note: requires `firebase login` first (interactive OAuth). The service-account key approach hits IAM permission issues for rule deploys.
 
 ### Environment Variables
 Create `.env.local` with:
 ```
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=city-tracker-17f45.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=city-tracker-17f45
+VITE_FIREBASE_STORAGE_BUCKET=city-tracker-17f45.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+VITE_FIREBASE_MEASUREMENT_ID=...
 ```
 
-Get credentials from: Supabase Dashboard → Settings → API
+Get credentials from: Firebase Console → Project Settings → General → "Your apps" → Web app config.
+
+### Dev Utilities
+- `yarn clear:firebase` - Wipes all entries + photos (requires `FIREBASE_SERVICE_ACCOUNT_PATH` env var pointing at a downloaded service-account JSON). Useful for resetting a test environment.
+
+### Migration history
+The app moved from Supabase to Firebase on 2026-05-23. The full migration plan and step-by-step record is in `docs/supabase-to-firebase-migration.md`.
 
 ## Project Structure
 ```
@@ -66,7 +81,7 @@ src/
 ├── components/     # Reusable UI components (Button, Select, Input, etc.)
 ├── screens/        # Full-page screens (HomeScreen, AddEntryScreen)
 ├── hooks/          # Custom React hooks (useGeolocation, usePhotoUpload, useSnackbar)
-├── lib/            # Utilities (supabase client, i18n, localStorage helpers)
+├── lib/            # Utilities (firebase client, i18n, localStorage helpers)
 ├── locales/        # Translation files (en.json, he.json)
 ├── types/          # TypeScript type definitions
 ├── App.tsx         # Main app with screen navigation
@@ -185,29 +200,40 @@ import { isRTL } from '@/lib/i18n';
 
 ## Database Schema
 
-### Table: `entries`
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | Primary key, auto-generated |
-| type | text | Entry type in English (e.g., "Electricity Board") |
-| description | text | Optional user notes |
-| latitude | float8 | GPS latitude |
-| longitude | float8 | GPS longitude |
-| address | text | Reverse-geocoded address |
-| photo_urls | text[] | Array of storage URLs |
-| created_at | timestamptz | Auto-generated timestamp |
+### Firestore Collection: `entries`
+Auto-IDs (Firestore document IDs preserved from the original Supabase UUIDs after the migration).
 
-**Note:** Entry `type` is always stored in English. Use `translateTypeName()` for display.
+Core fields on every doc:
+| Field | Type | Notes |
+|-------|------|-------|
+| type | string | Entry type stored as snake_case English key (e.g., `electricity_board`). Use `translateTypeName()` for display |
+| description | string \| null | Optional user notes |
+| latitude | number | GPS latitude |
+| longitude | number | GPS longitude |
+| address | string \| null | Reverse-geocoded English display address |
+| address_he | string \| null | Reverse-geocoded Hebrew display address |
+| photo_urls | string[] | Array of Firebase Storage download URLs |
+| created_at | string | ISO 8601 timestamp, set client-side at write time |
 
-### Storage Bucket: `photos`
-- Public read access
-- Accepts: PNG, JPEG, WebP, HEIC
-- Max file size: 10MB
+Additional structured-address fields (also flat on the doc, all `string \| null`):
+- EN: `house_number_en`, `street_en`, `neighborhood_en`, `city_en`, `county_en`, `state_en`, `postcode_en`, `country_en`, `country_code`
+- HE: `house_number_he`, `street_he`, `neighborhood_he`, `city_he`, `county_he`, `state_he`, `postcode_he`, `country_he`
+
+See `src/types/index.ts` for the canonical `Entry` shape.
+
+### Composite indexes
+Defined in `firebase/firestore.indexes.json`:
+- `entries`: `(type ASC, latitude ASC, longitude ASC)` — required by the duplicate-detection bbox query in `useNearbyEntries`. Uses Firestore's post-March-2024 multi-field range filter support.
+
+### Storage: `photos/` prefix
+- Path pattern: `photos/{ISO-with-hyphens}-{rand}.{ext}` (e.g., `photos/2026-05-23T10-30-45Z-abc123.jpg`)
+- Download URLs are tokenized (`?alt=media&token=...`) from `getDownloadURL()`
+- No file-size or content-type restrictions enforced by rules currently — worth adding later
 
 ## Key Features
 1. **Type dropdown with memory** - Remembers last selected type via localStorage
 2. **GPS auto-capture** - Gets location on Add screen, reverse geocodes via OpenStreetMap
-3. **Photo upload** - Up to 3 photos per entry, uploaded to Supabase Storage
+3. **Photo upload** - Up to 3 photos per entry, uploaded to Firebase Storage
 4. **Snackbar notifications** - Success/error toasts with 3s auto-dismiss
 5. **Multi-language support** - English (default) and Hebrew with full RTL support
 
