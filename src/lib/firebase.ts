@@ -1,4 +1,5 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, signInAnonymously, type Auth } from 'firebase/auth';
 import { getFirestore, collection, addDoc, type Firestore } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, type FirebaseStorage } from 'firebase/storage';
 import type { Entry, StructuredAddress } from '@/types';
@@ -20,6 +21,18 @@ if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
 const app: FirebaseApp = initializeApp(firebaseConfig);
 export const db: Firestore = getFirestore(app);
 export const storage: FirebaseStorage = getStorage(app);
+const auth: Auth = getAuth(app);
+
+// Sign in the client anonymously so security rules can enforce
+// `request.auth != null`. Bots without a token get rejected before
+// they can read/write. Consumers `await authReady` before any
+// Firestore/Storage call to ensure the token is attached.
+export const authReady: Promise<void> = (async () => {
+  await auth.authStateReady();
+  if (!auth.currentUser) {
+    await signInAnonymously(auth);
+  }
+})();
 
 export async function uploadPhoto(file: File): Promise<string | null> {
   const fileExt = file.name.split('.').pop();
@@ -28,6 +41,7 @@ export async function uploadPhoto(file: File): Promise<string | null> {
   const filePath = `photos/${fileName}`;
 
   try {
+    await authReady;
     const fileRef = ref(storage, filePath);
     await uploadBytes(fileRef, file);
     return await getDownloadURL(fileRef);
@@ -105,6 +119,7 @@ export async function createEntry(entry: CreateEntryData): Promise<Entry> {
   }
 
   try {
+    await authReady;
     const docRef = await addDoc(collection(db, 'entries'), dbEntry);
     return { id: docRef.id, ...dbEntry } as Entry;
   } catch (err) {

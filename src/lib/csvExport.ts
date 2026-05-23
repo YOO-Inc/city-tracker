@@ -6,7 +6,7 @@ import {
   where,
   type QueryConstraint,
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, authReady } from './firebase';
 import { t, translateTypeName } from './i18n';
 import type { Entry } from '@/types';
 
@@ -24,6 +24,7 @@ export interface DateWithCount {
  */
 export async function fetchUniqueDates(): Promise<DateWithCount[]> {
   try {
+    await authReady;
     const snapshot = await getDocs(
       query(collection(db, 'entries'), orderBy('created_at', 'desc'))
     );
@@ -59,6 +60,7 @@ export async function fetchEntriesForExport(options: ExportOptions = {}): Promis
   constraints.push(orderBy('created_at', 'desc'));
 
   try {
+    await authReady;
     const snapshot = await getDocs(query(collection(db, 'entries'), ...constraints));
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Entry);
   } catch (err) {

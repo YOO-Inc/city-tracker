@@ -9,7 +9,7 @@ import { Snackbar } from '@/components/Snackbar';
 import { useSnackbar } from '@/hooks/useSnackbar';
 import { useVersionCheck } from '@/hooks/useVersionCheck';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, authReady } from '@/lib/firebase';
 import { t, initLanguage, subscribeToLanguageChange } from '@/lib/i18n';
 import { seedDefaultContactsIfNeeded } from '@/lib/contacts';
 
@@ -37,6 +37,7 @@ function AppRoutes() {
 
   const fetchTypeCounts = async () => {
     try {
+      await authReady;
       const snapshot = await getDocs(collection(db, 'entries'));
       const counts = snapshot.docs.reduce<Record<string, number>>((acc, doc) => {
         const type = doc.data().type as string;

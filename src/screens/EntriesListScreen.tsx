@@ -8,7 +8,7 @@ import { ExportModal } from '@/components/ExportModal';
 import { EntryPreviewModal } from '@/components/EntryPreviewModal';
 import { t, translateTypeName, formatLocalizedDate, getLanguage, getEntryDisplayAddress, FormattedAddress } from '@/lib/i18n';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, authReady } from '@/lib/firebase';
 import { getTypeColor } from '@/lib/storage';
 import type { Entry } from '@/types';
 
@@ -55,6 +55,7 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
   useEffect(() => {
     async function fetchEntries() {
       try {
+        await authReady;
         const snapshot = await getDocs(
           query(collection(db, 'entries'), orderBy('created_at', 'desc'))
         );

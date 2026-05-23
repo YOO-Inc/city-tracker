@@ -1,11 +1,13 @@
 rules_version = '2';
 
-// Permissive rules matching the Supabase RLS posture (open access for MVP).
-// Tighten before opening the app to a wider audience.
+// Authenticated-only access for the entries collection.
+// The app signs in anonymously on startup (see src/lib/firebase.ts), so any
+// real app user has a valid token. Bots/scrapers without a token are
+// rejected. To raise the bar further later, add Firebase App Check.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /entries/{doc} {
-      allow read, write: if true;
+      allow read, write: if request.auth != null;
     }
   }
 }

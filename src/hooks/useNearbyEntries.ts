@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, authReady } from '@/lib/firebase';
 import {
   calculateDistance,
   getBoundingBox,
@@ -55,6 +55,8 @@ export function useNearbyEntries(
     setError(null);
 
     try {
+      await authReady;
+
       // Calculate bounding box for efficient DB query
       const bbox = getBoundingBox(latitude, longitude, DUPLICATE_DETECTION_RADIUS);
 

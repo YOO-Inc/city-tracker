@@ -69,6 +69,25 @@ VITE_FIREBASE_MEASUREMENT_ID=...
 
 Get credentials from: Firebase Console → Project Settings → General → "Your apps" → Web app config.
 
+### Authentication (Anonymous Auth)
+The app uses **Firebase Anonymous Auth** to keep Firestore behind a `request.auth != null` gate without any user-facing login UX. On startup, `src/lib/firebase.ts` calls `signInAnonymously` and exposes an `authReady: Promise<void>` that resolves once the auth token is attached.
+
+**CRITICAL when adding new Firestore/Storage call sites:**
+```typescript
+import { authReady, db } from '@/lib/firebase';
+
+async function fetchSomething() {
+  await authReady;                          // ← always await this first
+  const snap = await getDocs(collection(db, 'entries'));
+  // ...
+}
+```
+Forgetting the `await authReady` causes the first request to race the sign-in and fail with `PERMISSION_DENIED` because no token is attached yet. After the first request the token is cached, so subsequent calls are effectively free.
+
+`createEntry` and `uploadPhoto` (in `firebase.ts`) already handle this internally; only direct `getDocs` / `addDoc` / `uploadBytes` consumers need the explicit await.
+
+Photos in Storage are **publicly readable** by design (so plain `<img src="...">` tags work — browsers can't attach auth headers to image requests). The photo URLs themselves live inside auth-gated Firestore entries, so the index of all photos is protected even though individual files aren't.
+
 ### Dev Utilities
 - `yarn clear:firebase` - Wipes all entries + photos (requires `FIREBASE_SERVICE_ACCOUNT_PATH` env var pointing at a downloaded service-account JSON). Useful for resetting a test environment.
 
