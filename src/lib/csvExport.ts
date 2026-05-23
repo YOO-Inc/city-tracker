@@ -1,4 +1,12 @@
-import { supabase } from './supabase';
+import {
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  where,
+  type QueryConstraint,
+} from 'firebase/firestore';
+import { db } from './firebase';
 import { t, translateTypeName } from './i18n';
 import type { Entry } from '@/types';
 
@@ -15,49 +23,48 @@ export interface DateWithCount {
  * Fetch unique dates that have entries (for dropdown) with counts
  */
 export async function fetchUniqueDates(): Promise<DateWithCount[]> {
-  const { data, error } = await supabase
-    .from('entries')
-    .select('created_at')
-    .order('created_at', { ascending: false });
+  try {
+    const snapshot = await getDocs(
+      query(collection(db, 'entries'), orderBy('created_at', 'desc'))
+    );
 
-  if (error || !data) {
-    console.error('Failed to fetch dates:', error);
+    // Count entries per date (YYYY-MM-DD)
+    const dateCounts = new Map<string, number>();
+    for (const doc of snapshot.docs) {
+      const createdAt = doc.data().created_at as string;
+      const date = createdAt.split('T')[0];
+      dateCounts.set(date, (dateCounts.get(date) || 0) + 1);
+    }
+
+    return Array.from(dateCounts.entries()).map(([date, count]) => ({ date, count }));
+  } catch (err) {
+    console.error('Failed to fetch dates:', err);
     return [];
   }
-
-  // Count entries per date (YYYY-MM-DD)
-  const dateCounts = new Map<string, number>();
-  for (const entry of data) {
-    const date = entry.created_at.split('T')[0];
-    dateCounts.set(date, (dateCounts.get(date) || 0) + 1);
-  }
-
-  return Array.from(dateCounts.entries()).map(([date, count]) => ({ date, count }));
 }
 
 /**
  * Fetch entries for export, optionally filtered by date
  */
 export async function fetchEntriesForExport(options: ExportOptions = {}): Promise<Entry[]> {
-  let query = supabase
-    .from('entries')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const constraints: QueryConstraint[] = [];
 
   if (options.date) {
     const startOfDay = `${options.date}T00:00:00.000Z`;
     const endOfDay = `${options.date}T23:59:59.999Z`;
-    query = query.gte('created_at', startOfDay).lte('created_at', endOfDay);
+    constraints.push(where('created_at', '>=', startOfDay));
+    constraints.push(where('created_at', '<=', endOfDay));
   }
 
-  const { data, error } = await query;
+  constraints.push(orderBy('created_at', 'desc'));
 
-  if (error) {
-    console.error('Failed to fetch entries:', error);
-    throw error;
+  try {
+    const snapshot = await getDocs(query(collection(db, 'entries'), ...constraints));
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Entry);
+  } catch (err) {
+    console.error('Failed to fetch entries:', err);
+    throw err;
   }
-
-  return data || [];
 }
 
 /**

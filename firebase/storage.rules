@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Permissive rules matching the Supabase Storage policies (open access for MVP).
+// Tighten before opening the app to a wider audience.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /photos/{file=**} {
+      allow read, write: if true;
+    }
+  }
+}

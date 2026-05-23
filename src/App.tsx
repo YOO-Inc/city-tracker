@@ -8,7 +8,8 @@ import { ContactsScreen } from '@/screens/ContactsScreen';
 import { Snackbar } from '@/components/Snackbar';
 import { useSnackbar } from '@/hooks/useSnackbar';
 import { useVersionCheck } from '@/hooks/useVersionCheck';
-import { supabase } from '@/lib/supabase';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { t, initLanguage, subscribeToLanguageChange } from '@/lib/i18n';
 import { seedDefaultContactsIfNeeded } from '@/lib/contacts';
 
@@ -35,19 +36,19 @@ function AppRoutes() {
   }, []);
 
   const fetchTypeCounts = async () => {
-    const { data } = await supabase
-      .from('entries')
-      .select('type');
-
-    if (data) {
-      const counts = data.reduce<Record<string, number>>((acc, entry) => {
-        acc[entry.type] = (acc[entry.type] || 0) + 1;
+    try {
+      const snapshot = await getDocs(collection(db, 'entries'));
+      const counts = snapshot.docs.reduce<Record<string, number>>((acc, doc) => {
+        const type = doc.data().type as string;
+        acc[type] = (acc[type] || 0) + 1;
         return acc;
       }, {});
 
       setTypeCounts(
         Object.entries(counts).map(([type, count]) => ({ type, count }))
       );
+    } catch (err) {
+      console.error('Error fetching type counts:', err);
     }
     setLoading(false);
   };

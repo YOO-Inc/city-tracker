@@ -7,7 +7,8 @@ import { EntriesMapView } from '@/components/EntriesMapView';
 import { ExportModal } from '@/components/ExportModal';
 import { EntryPreviewModal } from '@/components/EntryPreviewModal';
 import { t, translateTypeName, formatLocalizedDate, getLanguage, getEntryDisplayAddress, FormattedAddress } from '@/lib/i18n';
-import { supabase } from '@/lib/supabase';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { getTypeColor } from '@/lib/storage';
 import type { Entry } from '@/types';
 
@@ -53,15 +54,14 @@ export function EntriesListScreen({ onBack, onAddEntry, showSuccess, showError }
 
   useEffect(() => {
     async function fetchEntries() {
-      const { data, error } = await supabase
-        .from('entries')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Failed to fetch entries:', error);
-      } else {
-        setEntries(data || []);
+      try {
+        const snapshot = await getDocs(
+          query(collection(db, 'entries'), orderBy('created_at', 'desc'))
+        );
+        const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Entry);
+        setEntries(data);
+      } catch (err) {
+        console.error('Failed to fetch entries:', err);
       }
       setLoading(false);
     }

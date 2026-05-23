@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { uploadPhoto } from '@/lib/supabase';
+import { uploadPhoto } from '@/lib/firebase';
 
 interface PhotoItem {
   id: string;

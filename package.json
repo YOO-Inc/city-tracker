@@ -17,11 +17,15 @@
     "supabase:status": "supabase status",
     "supabase:link": "supabase link",
     "supabase:push": "supabase db push",
-    "supabase:reset": "supabase db reset"
+    "supabase:reset": "supabase db reset",
+    "backup:supabase": "tsx --env-file=.env.local scripts/backup-supabase.ts",
+    "clear:firebase": "tsx --env-file=.env.local scripts/clear-firebase.ts",
+    "migrate:firebase": "tsx --env-file=.env.local scripts/migrate-supabase-to-firebase.ts"
   },
   "dependencies": {
     "@react-spring/web": "^10.0.3",
     "@supabase/supabase-js": "^2.45.0",
+    "firebase": "^12.13.0",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -38,6 +42,7 @@
     "eslint": "^9.13.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
+    "firebase-admin": "^13.10.0",
     "globals": "^15.11.0",
     "postcss": "^8.4.47",
     "supabase": "^2.76.8",

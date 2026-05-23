@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import {
   calculateDistance,
   getBoundingBox,
@@ -57,30 +58,28 @@ export function useNearbyEntries(
       // Calculate bounding box for efficient DB query
       const bbox = getBoundingBox(latitude, longitude, DUPLICATE_DETECTION_RADIUS);
 
-      // Query entries within bounding box that match the type
-      const { data, error: queryError } = await supabase
-        .from('entries')
-        .select('*')
-        .eq('type', entryType)
-        .gte('latitude', bbox.minLat)
-        .lte('latitude', bbox.maxLat)
-        .gte('longitude', bbox.minLon)
-        .lte('longitude', bbox.maxLon);
+      // Query entries within bounding box that match the type.
+      // Firestore (March 2024+) supports range/inequality filters on multiple fields.
+      const snapshot = await getDocs(
+        query(
+          collection(db, 'entries'),
+          where('type', '==', entryType),
+          where('latitude', '>=', bbox.minLat),
+          where('latitude', '<=', bbox.maxLat),
+          where('longitude', '>=', bbox.minLon),
+          where('longitude', '<=', bbox.maxLon),
+        )
+      );
 
-      if (queryError) {
-        console.error('Error fetching nearby entries:', queryError);
-        setError(queryError.message);
+      if (snapshot.empty) {
         setNearbyEntries([]);
         return;
       }
 
-      if (!data || data.length === 0) {
-        setNearbyEntries([]);
-        return;
-      }
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Entry);
 
       // Calculate precise distances and filter to actual radius
-      const entriesWithDistance: NearbyEntry[] = (data as Entry[])
+      const entriesWithDistance: NearbyEntry[] = data
         .map((entry) => ({
           ...entry,
           distance: calculateDistance(

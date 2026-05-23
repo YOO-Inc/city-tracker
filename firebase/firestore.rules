@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Permissive rules matching the Supabase RLS posture (open access for MVP).
+// Tighten before opening the app to a wider audience.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /entries/{doc} {
+      allow read, write: if true;
+    }
+  }
+}

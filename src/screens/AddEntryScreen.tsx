@@ -10,7 +10,7 @@ import { usePhotoUpload } from '@/hooks/usePhotoUpload';
 import { useNearbyEntries } from '@/hooks/useNearbyEntries';
 import { t, translateTypeName, getLocationDisplayAddress } from '@/lib/i18n';
 import { getLastEntryType, setLastEntryType, getEntryTypes, getTypeColor } from '@/lib/storage';
-import { createEntry } from '@/lib/supabase';
+import { createEntry } from '@/lib/firebase';
 import { calculateDistance, MOVEMENT_DETECTION_RADIUS } from '@/lib/geo';
 import type { LocationData } from '@/types';
 

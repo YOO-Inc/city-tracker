@@ -41,3 +41,9 @@ dist-ssr
 # Supabase
 supabase/.branches
 supabase/.temp
+
+# Local data backups (Supabase → Firebase migration)
+backups/
+
+# Firebase admin SDK credentials (used by migration script only — deleted after migration)
+firebase-admin-key.json
