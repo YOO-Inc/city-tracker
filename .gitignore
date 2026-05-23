@@ -38,9 +38,5 @@ dist-ssr
 !.yarn/versions
 .pnp.*
 
-# Supabase
-supabase/.branches
-supabase/.temp
-
-# Local data backups (Supabase → Firebase migration)
+# Local data backups (from the Supabase → Firebase migration)
 backups/

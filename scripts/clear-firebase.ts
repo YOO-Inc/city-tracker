@@ -1,6 +1,6 @@
 /**
  * Verify and clear Firebase data (entries collection + photos in Storage).
- * Used to wipe test data before running the data migration from Supabase.
+ * Useful for wiping a test environment.
  *
  * Run: yarn clear:firebase
  * Reads FIREBASE_SERVICE_ACCOUNT_PATH from .env.local (via tsx --env-file).
